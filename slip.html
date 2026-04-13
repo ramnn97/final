@@ -1,0 +1,3457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced Java & Android – All Slips</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #6c63ff;
+    --accent2: #00d4ff;
+    --green: #00e676;
+    --orange: #ff9800;
+    --text: #e8eaf6;
+    --muted: #8892b0;
+    --code-bg: #0d1117;
+    --radius: 12px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    line-height:1.6;
+  }
+
+  /* ── TOP NAV ── */
+  #topbar{
+    position:sticky;top:0;z-index:100;
+    background:rgba(15,17,23,0.92);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+    padding:0 24px;
+    display:flex;align-items:center;gap:16px;
+    height:58px;
+  }
+  #topbar h1{
+    font-size:1.1rem;font-weight:700;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    white-space:nowrap;
+  }
+  #search{
+    flex:1;max-width:340px;
+    background:var(--surface2);border:1px solid var(--border);
+    border-radius:8px;padding:7px 14px;
+    color:var(--text);font-size:.9rem;outline:none;
+    transition:border-color .2s;
+  }
+  #search:focus{border-color:var(--accent);}
+  #search::placeholder{color:var(--muted);}
+
+  /* ── SIDEBAR ── */
+  #layout{display:flex;min-height:calc(100vh - 58px);}
+  #sidebar{
+    width:220px;flex-shrink:0;
+    background:var(--surface);
+    border-right:1px solid var(--border);
+    padding:16px 0;
+    position:sticky;top:58px;
+    height:calc(100vh - 58px);
+    overflow-y:auto;
+  }
+  #sidebar::-webkit-scrollbar{width:4px;}
+  #sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+  .sb-label{
+    font-size:.68rem;font-weight:700;letter-spacing:.12em;
+    color:var(--muted);text-transform:uppercase;
+    padding:8px 18px 4px;
+  }
+  .sb-link{
+    display:block;padding:7px 18px;
+    color:var(--muted);font-size:.88rem;
+    text-decoration:none;border-left:3px solid transparent;
+    transition:all .18s;
+  }
+  .sb-link:hover,.sb-link.active{
+    color:var(--accent2);
+    border-left-color:var(--accent2);
+    background:rgba(0,212,255,.06);
+  }
+
+  /* ── MAIN ── */
+  #main{flex:1;padding:32px 36px 80px;max-width:960px;}
+
+  /* ── SLIP CARD ── */
+  .slip{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    margin-bottom:32px;
+    overflow:hidden;
+  }
+  .slip-header{
+    background:linear-gradient(135deg,var(--surface2),#1c1f35);
+    border-bottom:1px solid var(--border);
+    padding:18px 24px;
+    display:flex;align-items:center;gap:12px;
+    cursor:pointer;user-select:none;
+  }
+  .slip-badge{
+    background:linear-gradient(135deg,var(--accent),#9c27b0);
+    border-radius:8px;padding:4px 12px;
+    font-size:.78rem;font-weight:700;color:#fff;
+    white-space:nowrap;
+  }
+  .slip-title{font-size:1rem;font-weight:600;color:var(--text);}
+  .slip-toggle{
+    margin-left:auto;font-size:1.2rem;color:var(--muted);
+    transition:transform .3s;
+  }
+  .slip.collapsed .slip-toggle{transform:rotate(-90deg);}
+  .slip-body{padding:24px;display:block;}
+  .slip.collapsed .slip-body{display:none;}
+
+  /* ── QUESTION ── */
+  .q-section{margin-bottom:24px;}
+  .q-title{
+    font-size:.82rem;font-weight:700;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--accent2);
+    margin-bottom:12px;padding-bottom:6px;
+    border-bottom:1px solid var(--border);
+  }
+  .q-block{margin-bottom:20px;}
+  .q-label{
+    display:inline-block;
+    background:var(--surface2);border:1px solid var(--border);
+    border-radius:6px;padding:3px 10px;
+    font-size:.82rem;font-weight:700;color:var(--orange);
+    margin-bottom:8px;
+  }
+  .q-text{
+    color:var(--muted);font-size:.88rem;
+    margin-bottom:10px;font-style:italic;
+  }
+
+  /* ── CODE BLOCK ── */
+  .code-wrap{
+    position:relative;border-radius:10px;
+    background:var(--code-bg);
+    border:1px solid var(--border);
+    overflow:hidden;margin-top:6px;
+  }
+  .code-header{
+    background:#161b22;
+    border-bottom:1px solid var(--border);
+    padding:8px 14px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .code-lang{
+    font-size:.73rem;font-weight:600;letter-spacing:.08em;
+    color:var(--muted);text-transform:uppercase;
+    background:var(--surface2);border-radius:4px;
+    padding:2px 8px;
+  }
+  .code-filename{font-size:.78rem;color:#58a6ff;margin-left:4px;}
+  .copy-btn{
+    margin-left:auto;background:var(--surface2);
+    border:1px solid var(--border);border-radius:6px;
+    color:var(--muted);font-size:.73rem;padding:3px 10px;
+    cursor:pointer;transition:all .18s;
+  }
+  .copy-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .copy-btn.copied{background:var(--green);color:#000;border-color:var(--green);}
+  pre{
+    padding:16px 18px;overflow-x:auto;
+    font-family:'Cascadia Code','Fira Code','Consolas',monospace;
+    font-size:.82rem;line-height:1.65;
+    white-space:pre;
+  }
+  pre::-webkit-scrollbar{height:5px;}
+  pre::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+  /* ── SYNTAX COLOURS ── */
+  .kw{color:#ff79c6;}
+  .cm{color:#6272a4;font-style:italic;}
+  .st{color:#f1fa8c;}
+  .nm{color:#bd93f9;}
+  .fn{color:#50fa7b;}
+  .tp{color:#8be9fd;}
+  .an{color:#ffb86c;}
+
+  /* ── TAG PILLS ── */
+  .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .tag{
+    background:rgba(108,99,255,.15);
+    border:1px solid rgba(108,99,255,.35);
+    border-radius:20px;padding:2px 10px;
+    font-size:.72rem;color:var(--accent);
+  }
+
+  /* ── BACK TO TOP ── */
+  #btt{
+    position:fixed;bottom:28px;right:28px;
+    background:var(--accent);color:#fff;
+    border:none;border-radius:50%;
+    width:42px;height:42px;font-size:1.1rem;
+    cursor:pointer;box-shadow:0 4px 20px rgba(108,99,255,.5);
+    display:none;align-items:center;justify-content:center;
+    transition:opacity .2s;z-index:99;
+  }
+  #btt.show{display:flex;}
+  #btt:hover{opacity:.85;}
+
+  /* ── PROGRESS BAR ── */
+  #progress{
+    position:fixed;top:0;left:0;height:3px;width:0;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    z-index:200;transition:width .1s;
+  }
+
+  /* ── SEARCH HIGHLIGHT ── */
+  mark{background:#6c63ff44;color:var(--text);border-radius:2px;}
+
+  @media(max-width:768px){
+    #sidebar{display:none;}
+    #main{padding:20px 16px 60px;}
+    #topbar{padding:0 12px;}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- TOP NAV -->
+<div id="topbar">
+  <h1>📚 AJ &amp; Android Slips</h1>
+  <input id="search" type="text" placeholder="Search slip, topic, code…" autocomplete="off">
+</div>
+
+<div id="layout">
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sb-label">Slips</div>
+    <script>
+      // sidebar links rendered by JS after slips are defined
+    </script>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main id="main">
+    <!-- slips injected by JS -->
+  </main>
+
+</div>
+
+<button id="btt" title="Back to top">↑</button>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  DATA — all 30 slips
+// ═══════════════════════════════════════════════════════════════
+const SLIPS = [
+
+// ─── SLIP 1 ─────────────────────────────────────────────────────
+{
+  n:1,
+  q1a:{
+    q:"Write a Java program to scroll the text from left to right and vice versa continuously.",
+    files:[{lang:"java",name:"ScrollText.java",code:`import java.awt.*;
+import java.awt.event.*;
+
+public class ScrollText extends Frame implements Runnable {
+    String text = "Welcome To Java Programming   ";
+    int x = 0;
+    boolean left = true;
+
+    public ScrollText() {
+        setSize(400, 200);
+        setVisible(true);
+        Thread t = new Thread(this);
+        t.start();
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) { dispose(); }
+        });
+    }
+
+    public void paint(Graphics g) {
+        g.drawString(text, x, 100);
+    }
+
+    public void run() {
+        while (true) {
+            if (left) { x += 5; if (x > 250) left = false; }
+            else       { x -= 5; if (x < 0)   left = true;  }
+            repaint();
+            try { Thread.sleep(100); } catch (Exception e) {}
+        }
+    }
+
+    public static void main(String[] args) { new ScrollText(); }
+}`}],
+    tags:["AWT","Threading","Runnable"]
+  },
+  q1b:{
+    q:"Write a socket program in Java for chatting application (Use Swing).",
+    files:[
+      {lang:"java",name:"Server.java",code:`import java.net.*;
+import java.io.*;
+
+public class Server {
+    public static void main(String[] args) throws Exception {
+        ServerSocket ss = new ServerSocket(1234);
+        Socket s = ss.accept();
+        DataInputStream dis = new DataInputStream(s.getInputStream());
+        System.out.println("Client: " + dis.readUTF());
+        dis.close(); s.close(); ss.close();
+    }
+}`},
+      {lang:"java",name:"Client.java",code:`import java.net.*;
+import java.io.*;
+
+public class Client {
+    public static void main(String[] args) throws Exception {
+        Socket s = new Socket("localhost", 1234);
+        DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+        dos.writeUTF("Hello Server");
+        dos.close(); s.close();
+    }
+}`}
+    ],
+    tags:["Socket","Networking"]
+  },
+  q2a:{
+    q:"Create a Simple Application Which Sends 'Hello' message from one activity to another with help of Button (Use Intent).",
+    files:[
+      {lang:"java",name:"MainActivity.java",code:`package com.example.helloapp;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    public void sendMessage(View view) {
+        Intent i = new Intent(this, SecondActivity.class);
+        i.putExtra("msg", "Hello");
+        startActivity(i);
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
+}`},
+      {lang:"java",name:"SecondActivity.java",code:`package com.example.helloapp;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class SecondActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second);
+        String msg = getIntent().getStringExtra("msg");
+        TextView tv = findViewById(R.id.textView);
+        tv.setText(msg);
+    }
+}`}
+    ],
+    tags:["Intent","Activity"]
+  },
+  q2b:{
+    q:"Create an Android application to demonstrate Progress Dialog Box using AsyncTask.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.progressapp;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    ProgressDialog pd;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        new MyTask().execute();
+    }
+    class MyTask extends AsyncTask<Void, Integer, Void> {
+        protected void onPreExecute() {
+            pd = new ProgressDialog(MainActivity.this);
+            pd.setMessage("Loading..."); pd.show();
+        }
+        protected Void doInBackground(Void... params) {
+            try { Thread.sleep(3000); } catch (Exception e) {}
+            return null;
+        }
+        protected void onPostExecute(Void result) { pd.dismiss(); }
+    }
+}`}],
+    tags:["AsyncTask","ProgressDialog"]
+  }
+},
+
+// ─── SLIP 4 ─────────────────────────────────────────────────────
+{
+  n:4,
+  q1a:{
+    q:"Write a Java Program to delete details of students whose initial character of their name is 'S'.",
+    files:[{lang:"java",name:"DeleteStudent.java",code:`import java.util.*;
+
+class Student {
+    int id; String name;
+    Student(int id, String name) { this.id = id; this.name = name; }
+}
+
+public class DeleteStudent {
+    public static void main(String[] args) {
+        ArrayList<Student> list = new ArrayList<>();
+        list.add(new Student(1, "Sam"));
+        list.add(new Student(2, "Ram"));
+        list.add(new Student(3, "Sita"));
+        list.add(new Student(4, "Amit"));
+        Iterator<Student> it = list.iterator();
+        while (it.hasNext()) {
+            Student s = it.next();
+            if (s.name.startsWith("S")) it.remove();
+        }
+        for (Student s : list) System.out.println(s.id + " " + s.name);
+    }
+}`}],
+    tags:["Collections","Iterator","ArrayList"]
+  },
+  q1b:{
+    q:"Write a SERVLET program that provides information about a HTTP request and server.",
+    files:[{lang:"java",name:"InfoServlet.java",code:`import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class InfoServlet extends HttpServlet {
+    public void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        res.setContentType("text/html");
+        PrintWriter out = res.getWriter();
+        out.println("<h2>Client Information</h2>");
+        out.println("IP Address: " + req.getRemoteAddr() + "<br>");
+        out.println("Browser: " + req.getHeader("User-Agent") + "<br>");
+        out.println("<h2>Server Information</h2>");
+        out.println("OS: " + System.getProperty("os.name") + "<br>");
+        out.println("Server Name: " + req.getServerName() + "<br>");
+    }
+}`}],
+    tags:["Servlet","HTTP","Request Info"]
+  },
+  q2a:{
+    q:"Create an Android App to read Student Details and display in another activity (table format).",
+    files:[
+      {lang:"java",name:"MainActivity.java",code:`package com.example.studentapp;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    EditText name, surname, marks;
+    Button submit;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        name = new EditText(this); surname = new EditText(this);
+        marks = new EditText(this); submit = new Button(this);
+        submit.setText("Submit");
+        setContentView(name);
+        addContentView(surname, new android.view.ViewGroup.LayoutParams(-2,-2));
+        addContentView(marks,   new android.view.ViewGroup.LayoutParams(-2,-2));
+        addContentView(submit,  new android.view.ViewGroup.LayoutParams(-2,-2));
+        submit.setOnClickListener(v -> {
+            Intent i = new Intent(this, SecondActivity.class);
+            i.putExtra("name",    name.getText().toString());
+            i.putExtra("surname", surname.getText().toString());
+            i.putExtra("marks",   marks.getText().toString());
+            startActivity(i);
+        });
+    }
+}`},
+      {lang:"java",name:"SecondActivity.java",code:`package com.example.studentapp;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class SecondActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        String name    = getIntent().getStringExtra("name");
+        String surname = getIntent().getStringExtra("surname");
+        String marks   = getIntent().getStringExtra("marks");
+        TextView tv = new TextView(this);
+        tv.setText("Name: " + name + "\\nSurname: " + surname + "\\nMarks: " + marks);
+        setContentView(tv);
+    }
+}`}
+    ],
+    tags:["Intent","Activity","Table"]
+  },
+  q2b:{
+    q:"Create an Android Application to display satellite view of current location using Google Map.",
+    files:[{lang:"java",name:"MapsActivity.java",code:`package com.example.mapapp;
+import android.os.Bundle;
+import androidx.fragment.app.FragmentActivity;
+import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.model.*;
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+    GoogleMap map;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        SupportMapFragment mapFragment = new SupportMapFragment();
+        getSupportFragmentManager().beginTransaction()
+                .add(android.R.id.content, mapFragment).commit();
+        mapFragment.getMapAsync(this);
+    }
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        LatLng location = new LatLng(18.5204, 73.8567);
+        map.addMarker(new MarkerOptions().position(location).title("Current Location"));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
+        map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+    }
+}`}],
+    tags:["Google Maps","Satellite","Location"]
+  }
+},
+
+// ─── SLIP 5 ─────────────────────────────────────────────────────
+{
+  n:5,
+  q1a:{
+    q:"Write a JSP program to calculate sum of first and last digit of a given number. Display sum in Red Color with font size 18.",
+    files:[{lang:"jsp",name:"sumDigits.jsp",code:`<html>
+<body>
+<form method="post">
+  Enter Number: <input type="text" name="num">
+  <input type="submit" value="Calculate">
+</form>
+<%
+if(request.getParameter("num") != null){
+    int n = Integer.parseInt(request.getParameter("num"));
+    int last = n % 10;
+    int first = n;
+    while(first >= 10) first /= 10;
+    int sum = first + last;
+%>
+<p style="color:red; font-size:18px;">Sum = <%= sum %></p>
+<% } %>
+</body>
+</html>`}],
+    tags:["JSP","Digits","Arithmetic"]
+  },
+  q1b:{
+    q:"Write a Java program in multithreading using applet for Traffic signal.",
+    files:[{lang:"java",name:"TrafficSignal.java",code:`import java.applet.Applet;
+import java.awt.*;
+
+public class TrafficSignal extends Applet implements Runnable {
+    int state = 0;
+    Thread t;
+    public void init() { t = new Thread(this); t.start(); }
+    public void run() {
+        while(true){
+            state = (state + 1) % 3;
+            repaint();
+            try { Thread.sleep(2000); } catch(Exception e){}
+        }
+    }
+    public void paint(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.fillRect(100,50,80,200);
+        if(state == 0){ g.setColor(Color.RED);    g.fillOval(120,60,40,40); }
+        if(state == 1){ g.setColor(Color.YELLOW); g.fillOval(120,110,40,40); }
+        if(state == 2){ g.setColor(Color.GREEN);  g.fillOval(120,160,40,40); }
+    }
+}`}],
+    tags:["Applet","Threading","Traffic Signal"]
+  },
+  q2a:{
+    q:"Create an Android Application that will change color of the College Name on click of Push Button and change font size, style using XML.",
+    files:[
+      {lang:"xml",name:"activity_main.xml",code:`<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/textView"
+        android:text="DY Patil College"
+        android:textSize="20sp"
+        android:textStyle="normal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/button"
+        android:text="Change Style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</LinearLayout>`},
+      {lang:"java",name:"MainActivity.java",code:`package com.example.styleapp;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        TextView tv  = findViewById(R.id.textView);
+        Button   btn = findViewById(R.id.button);
+        btn.setOnClickListener(v -> {
+            tv.setTextColor(Color.RED);
+            tv.setTextSize(30);
+            tv.setTypeface(null, android.graphics.Typeface.BOLD);
+        });
+    }
+}`}
+    ],
+    tags:["TextView","Button","XML Layout"]
+  },
+  q2b:{
+    q:"Create an Android Application to find factorial and display result in Alert Box.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.factorialalert;
+import android.app.AlertDialog;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EditText et = new EditText(this);
+        Button btn = new Button(this);
+        btn.setText("Calculate");
+        setContentView(et);
+        addContentView(btn, new android.view.ViewGroup.LayoutParams(-2,-2));
+        btn.setOnClickListener(v -> {
+            int n = Integer.parseInt(et.getText().toString());
+            int fact = 1;
+            for(int i=1;i<=n;i++) fact *= i;
+            new AlertDialog.Builder(this)
+                    .setTitle("Result")
+                    .setMessage("Factorial = " + fact)
+                    .setPositiveButton("OK", null).show();
+        });
+    }
+}`}],
+    tags:["AlertDialog","Factorial"]
+  }
+},
+
+// ─── SLIP 6 ─────────────────────────────────────────────────────
+{
+  n:6,
+  q1a:{
+    q:"Write a java program to blink image on the Frame continuously.",
+    files:[{lang:"java",name:"BlinkImage.java",code:`import java.awt.*;
+import java.awt.event.*;
+
+public class BlinkImage extends Frame implements Runnable {
+    Image img;
+    boolean visible = true;
+    Thread t;
+    public BlinkImage() {
+        img = Toolkit.getDefaultToolkit().getImage("image.jpg");
+        setSize(400, 300); setVisible(true);
+        t = new Thread(this); t.start();
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) { dispose(); }
+        });
+    }
+    public void paint(Graphics g) {
+        if (visible) g.drawImage(img, 100, 100, this);
+    }
+    public void run() {
+        while (true) {
+            visible = !visible; repaint();
+            try { Thread.sleep(500); } catch (Exception e) {}
+        }
+    }
+    public static void main(String[] args) { new BlinkImage(); }
+}`}],
+    tags:["AWT","Image","Threading"]
+  },
+  q1b:{
+    q:"Write a SERVLET program which counts how many times a user has visited a web page (Use Cookie).",
+    files:[{lang:"java",name:"VisitCounter.java",code:`import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class VisitCounter extends HttpServlet {
+    public void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        res.setContentType("text/html");
+        PrintWriter out = res.getWriter();
+        int count = 1;
+        Cookie cookies[] = req.getCookies();
+        if (cookies != null)
+            for (Cookie c : cookies)
+                if (c.getName().equals("visit"))
+                    count = Integer.parseInt(c.getValue()) + 1;
+        Cookie cookie = new Cookie("visit", String.valueOf(count));
+        res.addCookie(cookie);
+        if (count == 1) out.println("<h2>Welcome! First Visit</h2>");
+        else            out.println("<h2>You visited " + count + " times</h2>");
+    }
+}`}],
+    tags:["Servlet","Cookie","Visit Counter"]
+  },
+  q2a:{
+    q:"Create a Simple Application that performs Arithmetic Operations (Use Constraint Layout).",
+    files:[
+      {lang:"xml",name:"activity_main.xml",code:`<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText android:id="@+id/num1"
+        android:layout_width="0dp" android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOfParent="true"
+        app:layout_constraintStart_toStartOfParent="true"
+        app:layout_constraintEnd_toEndOfParent="true"/>
+
+    <EditText android:id="@+id/num2"
+        android:layout_width="0dp" android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/num1"
+        app:layout_constraintStart_toStartOfParent="true"
+        app:layout_constraintEnd_toEndOfParent="true"/>
+
+    <Button android:id="@+id/add" android:text="Add"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/num2"
+        app:layout_constraintStart_toStartOfParent="true"/>
+
+    <TextView android:id="@+id/result"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/add"
+        app:layout_constraintStart_toStartOfParent="true"/>
+</androidx.constraintlayout.widget.ConstraintLayout>`},
+      {lang:"java",name:"MainActivity.java",code:`package com.example.calcapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        EditText n1 = findViewById(R.id.num1);
+        EditText n2 = findViewById(R.id.num2);
+        Button add  = findViewById(R.id.add);
+        TextView res= findViewById(R.id.result);
+        add.setOnClickListener(v -> {
+            int a = Integer.parseInt(n1.getText().toString());
+            int b = Integer.parseInt(n2.getText().toString());
+            res.setText("Result = " + (a + b));
+        });
+    }
+}`}
+    ],
+    tags:["ConstraintLayout","Arithmetic"]
+  },
+  q2b:{
+    q:"Create an Android Application that sends Notification on button click and display message on second activity.",
+    files:[
+      {lang:"java",name:"MainActivity.java",code:`package com.example.notificationapp;
+import android.app.*;
+import android.content.Intent;
+import android.os.*;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Button btn = new Button(this);
+        btn.setText("Send Notification");
+        setContentView(btn);
+        btn.setOnClickListener(v -> {
+            NotificationManager nm = (NotificationManager)
+                    getSystemService(NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                nm.createNotificationChannel(new NotificationChannel(
+                        "id","channel",NotificationManager.IMPORTANCE_DEFAULT));
+            nm.notify(1, new NotificationCompat.Builder(this,"id")
+                    .setContentTitle("Message").setContentText("Hello from App")
+                    .setSmallIcon(android.R.drawable.ic_dialog_info).build());
+            startActivity(new Intent(this, SecondActivity.class));
+        });
+    }
+}`},
+      {lang:"java",name:"SecondActivity.java",code:`package com.example.notificationapp;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class SecondActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        TextView tv = new TextView(this);
+        tv.setText("Notification Clicked!");
+        setContentView(tv);
+    }
+}`}
+    ],
+    tags:["Notification","Intent","Service"]
+  }
+},
+
+// ─── SLIP 7 ─────────────────────────────────────────────────────
+{
+  n:7,
+  q1a:{
+    q:"Write a JSP script to validate given E-Mail ID.",
+    files:[{lang:"jsp",name:"validEmail.jsp",code:`<html>
+<body>
+<form method="post">
+  Enter Email: <input type="text" name="email">
+  <input type="submit" value="Validate">
+</form>
+<%
+if(request.getParameter("email") != null){
+    String email = request.getParameter("email");
+    if(email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"))
+        out.println("<h3>Valid Email ID</h3>");
+    else
+        out.println("<h3>Invalid Email ID</h3>");
+}
+%>
+</body>
+</html>`}],
+    tags:["JSP","Validation","Regex","Email"]
+  },
+  q1b:{
+    q:"Write a Multithreading program in Java to display numbers between 1 to 100 continuously in a TextField by clicking on button (Use Runnable Interface).",
+    files:[{lang:"java",name:"NumberThread.java",code:`import java.awt.*;
+import java.awt.event.*;
+
+public class NumberThread extends Frame implements Runnable {
+    TextField tf;
+    Button btn;
+    Thread t;
+    public NumberThread() {
+        tf = new TextField(20); btn = new Button("Start");
+        setLayout(new FlowLayout()); add(tf); add(btn);
+        btn.addActionListener(e -> { t = new Thread(this); t.start(); });
+        setSize(300,200); setVisible(true);
+        addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e){ dispose(); }
+        });
+    }
+    public void run() {
+        for(int i=1;i<=100;i++){
+            tf.setText(String.valueOf(i));
+            try { Thread.sleep(200); } catch(Exception e){}
+        }
+    }
+    public static void main(String[] args) { new NumberThread(); }
+}`}],
+    tags:["Threading","Runnable","AWT"]
+  },
+  q2a:{
+    q:"Create an Android Application to accept two numbers and find power and average. Display result on next activity.",
+    files:[
+      {lang:"java",name:"MainActivity.java",code:`package com.example.poweravg;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EditText n1 = new EditText(this);
+        EditText n2 = new EditText(this);
+        Button btn = new Button(this); btn.setText("Calculate");
+        setContentView(n1);
+        addContentView(n2,  new android.view.ViewGroup.LayoutParams(-2,-2));
+        addContentView(btn, new android.view.ViewGroup.LayoutParams(-2,-2));
+        btn.setOnClickListener(v -> {
+            double a = Double.parseDouble(n1.getText().toString());
+            double b = Double.parseDouble(n2.getText().toString());
+            Intent i = new Intent(this, SecondActivity.class);
+            i.putExtra("power", Math.pow(a,b));
+            i.putExtra("avg",   (a+b)/2);
+            startActivity(i);
+        });
+    }
+}`},
+      {lang:"java",name:"SecondActivity.java",code:`package com.example.poweravg;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class SecondActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        double power = getIntent().getDoubleExtra("power",0);
+        double avg   = getIntent().getDoubleExtra("avg",0);
+        TextView tv  = new TextView(this);
+        tv.setText("Power: " + power + "\\nAverage: " + avg);
+        setContentView(tv);
+    }
+}`}
+    ],
+    tags:["Math","Intent","Activity"]
+  },
+  q2b:{
+    q:"Create Android Application for Customer table using SQLite (Insert & Display using Toast).",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.customerdb;
+import android.database.sqlite.*;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    SQLiteDatabase db;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        db = openOrCreateDatabase("CustomerDB", MODE_PRIVATE, null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS Customer" +
+                   "(id INTEGER, name TEXT, address TEXT, phno TEXT)");
+        EditText id = new EditText(this);
+        EditText name = new EditText(this);
+        Button btn = new Button(this); btn.setText("Insert");
+        setContentView(id);
+        addContentView(name, new android.view.ViewGroup.LayoutParams(-2,-2));
+        addContentView(btn,  new android.view.ViewGroup.LayoutParams(-2,-2));
+        btn.setOnClickListener(v -> {
+            db.execSQL("INSERT INTO Customer VALUES(1,'Ram','Pune','1234567890')");
+            Toast.makeText(this, "Inserted", Toast.LENGTH_SHORT).show();
+            Cursor c = db.rawQuery("SELECT * FROM Customer", null);
+            while(c.moveToNext())
+                Toast.makeText(this, c.getInt(0)+" "+c.getString(1),
+                        Toast.LENGTH_SHORT).show();
+        });
+    }
+}`}],
+    tags:["SQLite","Toast","CRUD"]
+  }
+},
+
+// ─── SLIP 8 ─────────────────────────────────────────────────────
+{
+  n:8,
+  q1a:{
+    q:"Write a Java Program to display all the employee names whose initial character of a name is 'A'.",
+    files:[{lang:"java",name:"EmployeeFilter.java",code:`import java.util.*;
+
+class Employee {
+    int id; String name;
+    Employee(int id, String name){ this.id=id; this.name=name; }
+}
+
+public class EmployeeFilter {
+    public static void main(String[] args) {
+        ArrayList<Employee> list = new ArrayList<>();
+        list.add(new Employee(1,"Amit"));
+        list.add(new Employee(2,"Ravi"));
+        list.add(new Employee(3,"Ankit"));
+        list.add(new Employee(4,"Suresh"));
+        for(Employee e : list)
+            if(e.name.startsWith("A")) System.out.println(e.name);
+    }
+}`}],
+    tags:["Collections","Filter","ArrayList"]
+  },
+  q1b:{
+    q:"Write a Java program in multithreading using applet for Digital watch.",
+    files:[{lang:"java",name:"DigitalWatch.java",code:`import java.applet.Applet;
+import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class DigitalWatch extends Applet implements Runnable {
+    Thread t;
+    String time = "";
+    public void init() { t = new Thread(this); t.start(); }
+    public void run() {
+        while(true){
+            time = new SimpleDateFormat("HH:mm:ss").format(new Date());
+            repaint();
+            try { Thread.sleep(1000); } catch(Exception e){}
+        }
+    }
+    public void paint(Graphics g) {
+        g.setFont(new Font("Arial", Font.BOLD, 30));
+        g.drawString(time, 50, 100);
+    }
+}`}],
+    tags:["Applet","Time","Threading"]
+  },
+  q2a:{
+    q:"Create an Android application to demonstrate phone call using Implicit Intent.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.callapp;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Button btn = new Button(this);
+        btn.setText("Call");
+        setContentView(btn);
+        btn.setOnClickListener(v -> {
+            Intent i = new Intent(Intent.ACTION_DIAL);
+            i.setData(Uri.parse("tel:9876543210"));
+            startActivity(i);
+        });
+    }
+}`}],
+    tags:["Implicit Intent","Phone Call"]
+  },
+  q2b:{
+    q:"Develop an Android application that creates custom Alert Dialog containing Friends Name and onClick greet accordingly.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.alertapp;
+import android.app.AlertDialog;
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        String[] friends = {"Amit","Rahul","Neha"};
+        new AlertDialog.Builder(this)
+                .setTitle("Select Friend")
+                .setItems(friends, (dialog, which) ->
+                    new AlertDialog.Builder(this)
+                        .setMessage("Hello " + friends[which] + "!")
+                        .setPositiveButton("OK", null).show())
+                .show();
+    }
+}`}],
+    tags:["AlertDialog","Custom Dialog"]
+  }
+},
+
+// ─── SLIP 9 ─────────────────────────────────────────────────────
+{
+  n:9,
+  q1a:{
+    q:"Write a Java Program to create a Emp table and insert record (Use PreparedStatement).",
+    files:[{lang:"java",name:"EmpInsert.java",code:`import java.sql.*;
+
+public class EmpInsert {
+    public static void main(String[] args) {
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/test","root","");
+            PreparedStatement ps = con.prepareStatement(
+                "INSERT INTO Emp VALUES (?, ?, ?)");
+            ps.setInt(1,1); ps.setString(2,"Amit"); ps.setDouble(3,50000);
+            ps.executeUpdate();
+            System.out.println("Record Inserted");
+            con.close();
+        } catch(Exception e){ System.out.println(e); }
+    }
+}`}],
+    tags:["JDBC","PreparedStatement","SQL"]
+  },
+  q1b:{
+    q:"Write a JSP program for online shopping mall using Session (3 pages).",
+    files:[
+      {lang:"jsp",name:"page1.jsp",code:`<form action="page2.jsp">
+  Item1 Price: <input type="text" name="p1">
+  <input type="submit" value="Next">
+</form>`},
+      {lang:"jsp",name:"page2.jsp",code:`<% session.setAttribute("p1", request.getParameter("p1")); %>
+<form action="bill.jsp">
+  Item2 Price: <input type="text" name="p2">
+  <input type="submit" value="Bill">
+</form>`},
+      {lang:"jsp",name:"bill.jsp",code:`<%
+int p1 = Integer.parseInt((String)session.getAttribute("p1"));
+int p2 = Integer.parseInt(request.getParameter("p2"));
+int total = p1 + p2;
+%>
+<h2>Total Bill = <%= total %></h2>`}
+    ],
+    tags:["JSP","Session","Shopping Cart"]
+  },
+  q2a:{
+    q:"Design screens using Table Layout and display entered text using Toast.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.tablelayout;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        TableLayout table = new TableLayout(this);
+        EditText name = new EditText(this);
+        Button btn = new Button(this); btn.setText("Submit");
+        table.addView(name); table.addView(btn);
+        setContentView(table);
+        btn.setOnClickListener(v ->
+            Toast.makeText(this,"Name: "+name.getText(),Toast.LENGTH_SHORT).show());
+    }
+}`}],
+    tags:["TableLayout","Toast"]
+  },
+  q2b:{
+    q:"Create application to send SMS message and show delivery report.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.smsapp;
+import android.os.Bundle;
+import android.telephony.SmsManager;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Button btn = new Button(this); btn.setText("Send SMS");
+        setContentView(btn);
+        btn.setOnClickListener(v -> {
+            SmsManager sms = SmsManager.getDefault();
+            sms.sendTextMessage("9876543210",null,"Hello Friend",null,null);
+        });
+    }
+}`}],
+    tags:["SMS","SmsManager"]
+  }
+},
+
+// ─── SLIP 10 ─────────────────────────────────────────────────────
+{
+  n:10,
+  q1a:{
+    q:"Write a Java Program in Hibernate to display 'Hello World' message.",
+    files:[{lang:"java",name:"HelloHibernate.java",code:`import org.hibernate.*;
+import org.hibernate.cfg.*;
+
+public class HelloHibernate {
+    public static void main(String[] args) {
+        SessionFactory factory = new Configuration().configure().buildSessionFactory();
+        Session session = factory.openSession();
+        System.out.println("Hello World from Hibernate");
+        session.close(); factory.close();
+    }
+}`}],
+    tags:["Hibernate","ORM","Session"]
+  },
+  q1b:{
+    q:"Write a SERVLET program to display Product details in tabular format (Use Database).",
+    files:[{lang:"java",name:"ProductServlet.java",code:`import java.io.*;
+import java.sql.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class ProductServlet extends HttpServlet {
+    public void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        res.setContentType("text/html");
+        PrintWriter out = res.getWriter();
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/test","root","");
+            ResultSet rs = con.createStatement().executeQuery("SELECT * FROM Product");
+            out.println("<table border='1'><tr><th>Code</th><th>Name</th><th>Price</th></tr>");
+            while(rs.next()){
+                out.println("<tr><td>"+rs.getInt(1)+"</td><td>"+
+                    rs.getString(2)+"</td><td>"+rs.getDouble(3)+"</td></tr>");
+            }
+            out.println("</table>"); con.close();
+        } catch(Exception e){ out.println(e); }
+    }
+}`}],
+    tags:["Servlet","JDBC","Table"]
+  },
+  q2a:{
+    q:"Create an Android Application to perform Zoom In, Zoom Out and display Satellite view on Google Map.",
+    files:[{lang:"java",name:"MapsActivity.java",code:`package com.example.mapzoom;
+import android.os.Bundle;
+import androidx.fragment.app.FragmentActivity;
+import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.model.*;
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+    GoogleMap map;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        SupportMapFragment mf = new SupportMapFragment();
+        getSupportFragmentManager().beginTransaction()
+                .add(android.R.id.content,mf).commit();
+        mf.getMapAsync(this);
+    }
+    public void onMapReady(GoogleMap gm) {
+        map = gm;
+        LatLng loc = new LatLng(18.5204,73.8567);
+        map.addMarker(new MarkerOptions().position(loc).title("Location"));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc,10));
+        map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        map.getUiSettings().setZoomControlsEnabled(true);
+    }
+}`}],
+    tags:["Google Maps","Zoom","Satellite"]
+  },
+  q2b:{
+    q:"Create Application for Game table (Update & Display records).",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.gamedb;
+import android.database.sqlite.*;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    SQLiteDatabase db;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        db = openOrCreateDatabase("GameDB",MODE_PRIVATE,null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS Game" +
+                   "(gno INTEGER,gname TEXT,type TEXT,no_of_players INTEGER)");
+        db.execSQL("INSERT INTO Game VALUES(1,'Badminton','Indoor',2)");
+        db.execSQL("UPDATE Game SET no_of_players=4 WHERE gname='Badminton'");
+        Cursor c = db.rawQuery("SELECT * FROM Game",null);
+        while(c.moveToNext())
+            Toast.makeText(this,c.getInt(0)+" "+c.getString(1)+" "+c.getInt(3),
+                    Toast.LENGTH_SHORT).show();
+    }
+}`}],
+    tags:["SQLite","Update","CRUD"]
+  }
+},
+
+// ─── SLIP 11 ─────────────────────────────────────────────────────
+{
+  n:11,
+  q1a:{
+    q:"Write a Java program to display IP Address and name of client machine.",
+    files:[{lang:"java",name:"ClientInfo.java",code:`import java.net.*;
+
+public class ClientInfo {
+    public static void main(String[] args) {
+        try {
+            InetAddress ip = InetAddress.getLocalHost();
+            System.out.println("IP Address: " + ip.getHostAddress());
+            System.out.println("Host Name: "  + ip.getHostName());
+        } catch(Exception e){ System.out.println(e); }
+    }
+}`}],
+    tags:["Networking","InetAddress","IP"]
+  },
+  q1b:{
+    q:"Write a Java program to display sales details of Product between two selected dates.",
+    files:[{lang:"java",name:"SalesReport.java",code:`import java.sql.*;
+
+public class SalesReport {
+    public static void main(String[] args) {
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/test","root","");
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT * FROM Product WHERE date BETWEEN ? AND ?");
+            ps.setString(1,"2024-01-01");
+            ps.setString(2,"2024-12-31");
+            ResultSet rs = ps.executeQuery();
+            while(rs.next())
+                System.out.println(rs.getInt(1)+" "+rs.getString(2)+" "+rs.getDouble(3));
+            con.close();
+        } catch(Exception e){ System.out.println(e); }
+    }
+}`}],
+    tags:["JDBC","Date Range","Report"]
+  },
+  q2a:{
+    q:"Create an Android Application that Demonstrate Radio Button.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.radiobutton;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        RadioGroup rg = new RadioGroup(this);
+        RadioButton r1 = new RadioButton(this); r1.setText("Option 1");
+        RadioButton r2 = new RadioButton(this); r2.setText("Option 2");
+        rg.addView(r1); rg.addView(r2);
+        setContentView(rg);
+        rg.setOnCheckedChangeListener((g,id) ->
+            Toast.makeText(this,
+                ((RadioButton)findViewById(id)).getText(),
+                Toast.LENGTH_SHORT).show());
+    }
+}`}],
+    tags:["RadioButton","RadioGroup"]
+  },
+  q2b:{
+    q:"Create an Android Application that Demonstrate ListView and OnClick display Toast.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.listviewapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ListView lv = new ListView(this);
+        String[] items = {"Apple","Banana","Mango"};
+        lv.setAdapter(new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, items));
+        setContentView(lv);
+        lv.setOnItemClickListener((p,v,pos,id) ->
+            Toast.makeText(this,items[pos],Toast.LENGTH_SHORT).show());
+    }
+}`}],
+    tags:["ListView","ArrayAdapter","Toast"]
+  }
+},
+
+// ─── SLIP 12 ─────────────────────────────────────────────────────
+{
+  n:12,
+  q1a:{
+    q:"Write a Java program to count the number of records in a table.",
+    files:[{lang:"java",name:"CountRecords.java",code:`import java.sql.*;
+
+public class CountRecords {
+    public static void main(String[] args) {
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/test","root","");
+            ResultSet rs = con.createStatement()
+                    .executeQuery("SELECT COUNT(*) FROM Student");
+            if(rs.next()) System.out.println("Total Records: " + rs.getInt(1));
+            con.close();
+        } catch(Exception e){ System.out.println(e); }
+    }
+}`}],
+    tags:["JDBC","COUNT","SQL"]
+  },
+  q1b:{
+    q:"Write a program in Java which will show lifecycle (creation, sleep, and dead) of a thread.",
+    files:[{lang:"java",name:"ThreadLifecycle.java",code:`public class ThreadLifecycle extends Thread {
+    public void run() {
+        try {
+            System.out.println("Thread Running...");
+            Thread.sleep(2000);
+            System.out.println("Thread Completed...");
+        } catch(Exception e){}
+    }
+    public static void main(String[] args) {
+        ThreadLifecycle t = new ThreadLifecycle();
+        System.out.println("State: " + t.getState()); // NEW
+        t.start();
+        try {
+            Thread.sleep(500);
+            System.out.println("State: " + t.getState()); // TIMED_WAITING
+        } catch(Exception e){}
+        try { t.join(); } catch(Exception e){}
+        System.out.println("State: " + t.getState()); // TERMINATED
+    }
+}`}],
+    tags:["Thread Lifecycle","States","join"]
+  },
+  q2a:{
+    q:"Design Screens using RadioButtons & CheckBoxes and display selected text using Toast.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.selectionapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        RadioButton r1 = new RadioButton(this); r1.setText("Male");
+        CheckBox c1 = new CheckBox(this); c1.setText("Cricket");
+        Button btn = new Button(this); btn.setText("Submit");
+        LinearLayout l = new LinearLayout(this);
+        l.setOrientation(LinearLayout.VERTICAL);
+        l.addView(r1); l.addView(c1); l.addView(btn);
+        setContentView(l);
+        btn.setOnClickListener(v -> {
+            String msg = "";
+            if(r1.isChecked()) msg += "Male ";
+            if(c1.isChecked()) msg += "Cricket";
+            Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+        });
+    }
+}`}],
+    tags:["RadioButton","CheckBox","Toast"]
+  },
+  q2b:{
+    q:"Write a program to search a specific location on Google Map.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.mapsearch;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Button btn = new Button(this); btn.setText("Search Location");
+        setContentView(btn);
+        btn.setOnClickListener(v -> {
+            Uri uri = Uri.parse("geo:0,0?q=Pune");
+            startActivity(new Intent(Intent.ACTION_VIEW, uri));
+        });
+    }
+}`}],
+    tags:["Google Maps","Geo URI","Search"]
+  }
+},
+
+// ─── SLIP 13 ─────────────────────────────────────────────────────
+{
+  n:13,
+  q1a:{
+    q:"Write a Java program to display name of currently executing Thread in multithreading.",
+    files:[{lang:"java",name:"ThreadName.java",code:`public class ThreadName extends Thread {
+    public void run() {
+        System.out.println("Running Thread: " + Thread.currentThread().getName());
+    }
+    public static void main(String[] args) {
+        new ThreadName().start();
+        new ThreadName().start();
+    }
+}`}],
+    tags:["Threading","getName"]
+  },
+  q1b:{
+    q:"Write a JSP program to display the details of College (CollegeID, Coll_Name, Address) in tabular form.",
+    files:[{lang:"jsp",name:"college.jsp",code:`<%@ page import="java.sql.*" %>
+<html><body>
+<table border="1">
+<tr><th>ID</th><th>Name</th><th>Address</th></tr>
+<%
+try {
+    Connection con = DriverManager.getConnection(
+        "jdbc:mysql://localhost:3306/test","root","");
+    ResultSet rs = con.createStatement().executeQuery("SELECT * FROM College");
+    while(rs.next()){
+%>
+<tr>
+  <td><%= rs.getInt(1) %></td>
+  <td><%= rs.getString(2) %></td>
+  <td><%= rs.getString(3) %></td>
+</tr>
+<%  }  con.close();
+} catch(Exception e){ out.println(e); }
+%>
+</table>
+</body></html>`}],
+    tags:["JSP","JDBC","Table"]
+  },
+  q2a:{
+    q:"Create an Android App with Login Screen (without database) and go to next activity on success.",
+    files:[
+      {lang:"java",name:"MainActivity.java",code:`package com.example.loginapp;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EditText user = new EditText(this);
+        EditText pass = new EditText(this);
+        Button btn = new Button(this); btn.setText("Login");
+        setContentView(user);
+        addContentView(pass, new android.view.ViewGroup.LayoutParams(-2,-2));
+        addContentView(btn,  new android.view.ViewGroup.LayoutParams(-2,-2));
+        btn.setOnClickListener(v -> {
+            if(user.getText().toString().equals("admin") &&
+               pass.getText().toString().equals("123")){
+                Toast.makeText(this,"Login Success",Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this,SecondActivity.class));
+            } else {
+                Toast.makeText(this,"Login Failed",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+}`},
+      {lang:"java",name:"SecondActivity.java",code:`package com.example.loginapp;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class SecondActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        TextView tv = new TextView(this);
+        tv.setText("Welcome to Next Activity");
+        setContentView(tv);
+    }
+}`}
+    ],
+    tags:["Login","Intent","Validation"]
+  },
+  q2b:{
+    q:"Create Android application to perform operations on Student table (Sid, Sname, phno).",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.studentdb;
+import android.database.sqlite.*;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    SQLiteDatabase db;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        db = openOrCreateDatabase("StudentDB",MODE_PRIVATE,null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS Student" +
+                   "(Sid INTEGER,Sname TEXT,phno TEXT)");
+        db.execSQL("INSERT INTO Student VALUES(1,'Ram','9999999999')");
+        Cursor c = db.rawQuery("SELECT * FROM Student",null);
+        while(c.moveToNext())
+            Toast.makeText(this,c.getInt(0)+" "+c.getString(1),
+                    Toast.LENGTH_SHORT).show();
+    }
+}`}],
+    tags:["SQLite","Student","CRUD"]
+  }
+},
+
+// ─── SLIP 14 ─────────────────────────────────────────────────────
+{
+  n:14,
+  q1a:{
+    q:"Write a JSP program to accept Name and Age of Voter and check eligibility for voting.",
+    files:[{lang:"jsp",name:"voter.jsp",code:`<html><body>
+<form method="post">
+  Name: <input type="text" name="name"><br>
+  Age:  <input type="text" name="age"><br>
+  <input type="submit" value="Check">
+</form>
+<%
+if(request.getParameter("age") != null){
+    String name = request.getParameter("name");
+    int age = Integer.parseInt(request.getParameter("age"));
+    if(age >= 18)
+        out.println("<h3>"+name+" is Eligible for Voting</h3>");
+    else
+        out.println("<h3>"+name+" is Not Eligible for Voting</h3>");
+}
+%>
+</body></html>`}],
+    tags:["JSP","Validation","Voter"]
+  },
+  q1b:{
+    q:"Write a Java program to display given extension files from a specific directory.",
+    files:[{lang:"java",name:"ShowFiles.java",code:`import java.io.File;
+
+public class ShowFiles {
+    public static void main(String[] args) {
+        File dir = new File("C:\\\\Users");
+        String[] files = dir.list((d, name) -> name.endsWith(".txt"));
+        if(files != null)
+            for(String f : files) System.out.println(f);
+    }
+}`}],
+    tags:["File I/O","Filter","Directory"]
+  },
+  q2a:{
+    q:"Create Android application to send email with attachment.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.emailapp;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Button btn = new Button(this); btn.setText("Send Email");
+        setContentView(btn);
+        btn.setOnClickListener(v -> {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("application/pdf");
+            i.putExtra(Intent.EXTRA_EMAIL, new String[]{"abc@gmail.com"});
+            i.putExtra(Intent.EXTRA_SUBJECT,"Test Mail");
+            i.putExtra(Intent.EXTRA_TEXT,"Hello");
+            i.putExtra(Intent.EXTRA_STREAM,Uri.parse("file://sdcard/sample.pdf"));
+            startActivity(Intent.createChooser(i,"Send Email"));
+        });
+    }
+}`}],
+    tags:["Email","Intent","Attachment"]
+  },
+  q2b:{
+    q:"Create an Android application to demonstrate downloading a file using Service.",
+    files:[
+      {lang:"java",name:"DownloadService.java",code:`package com.example.downloadapp;
+import android.app.Service;
+import android.content.Intent;
+import android.os.IBinder;
+import java.io.InputStream;
+import java.net.URL;
+
+public class DownloadService extends Service {
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        new Thread(() -> {
+            try {
+                URL url = new URL("https://example.com/file.txt");
+                InputStream in = url.openStream();
+                in.close();
+            } catch(Exception e){}
+        }).start();
+        return START_STICKY;
+    }
+    public IBinder onBind(Intent intent){ return null; }
+}`},
+      {lang:"java",name:"MainActivity.java",code:`package com.example.downloadapp;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Button btn = new Button(this); btn.setText("Download File");
+        setContentView(btn);
+        btn.setOnClickListener(v ->
+            startService(new Intent(this,DownloadService.class)));
+    }
+}`}
+    ],
+    tags:["Service","Download","Background"]
+  }
+},
+
+// ─── SLIP 15 ─────────────────────────────────────────────────────
+{
+  n:15,
+  q1a:{
+    q:"Write a Java program to display each alphabet after 2 seconds between 'a' to 'z'.",
+    files:[{lang:"java",name:"AlphabetDelay.java",code:`public class AlphabetDelay {
+    public static void main(String[] args) {
+        try {
+            for(char c='a';c<='z';c++){
+                System.out.println(c);
+                Thread.sleep(2000);
+            }
+        } catch(Exception e){ System.out.println(e); }
+    }
+}`}],
+    tags:["Threading","sleep","Loop"]
+  },
+  q1b:{
+    q:"Write a Java program to accept the details of Student and store into the database.",
+    files:[{lang:"java",name:"StudentInsert.java",code:`import java.sql.*;
+import java.util.Scanner;
+
+public class StudentInsert {
+    public static void main(String[] args) {
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/test","root","");
+            Scanner sc = new Scanner(System.in);
+            System.out.print("Enter ID: ");   int id   = sc.nextInt();
+            System.out.print("Enter Name: "); String name = sc.next();
+            PreparedStatement ps = con.prepareStatement(
+                "INSERT INTO Student VALUES (?,?)");
+            ps.setInt(1,id); ps.setString(2,name);
+            ps.executeUpdate();
+            System.out.println("Record Inserted");
+            con.close();
+        } catch(Exception e){ System.out.println(e); }
+    }
+}`}],
+    tags:["JDBC","Scanner","Insert"]
+  },
+  q2a:{
+    q:"Design – add a border to an Android Layout.",
+    files:[
+      {lang:"xml",name:"activity_main.xml",code:`<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:padding="20dp">
+
+        <TextView
+            android:text="Border Layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+</LinearLayout>`},
+      {lang:"xml",name:"res/drawable/border.xml",code:`<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <stroke android:width="2dp" android:color="#000000"/>
+    <solid android:color="#FFFFFF"/>
+</shape>`}
+    ],
+    tags:["XML","Drawable","Border"]
+  },
+  q2b:{
+    q:"Create an Android Application to search a specific location on Google Map.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.mapsearch;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Button btn = new Button(this); btn.setText("Search Location");
+        setContentView(btn);
+        btn.setOnClickListener(v -> {
+            Uri uri = Uri.parse("geo:0,0?q=Mumbai");
+            startActivity(new Intent(Intent.ACTION_VIEW, uri));
+        });
+    }
+}`}],
+    tags:["Google Maps","Search","Geo URI"]
+  }
+},
+
+// ─── SLIP 16 ─────────────────────────────────────────────────────
+{
+  n:16,
+  q1a:{
+    q:"Write a JSP script to accept username and password. If same → Login Successfully else Login Failed.",
+    files:[{lang:"jsp",name:"login.jsp",code:`<html><body>
+<form method="post">
+  Username: <input type="text" name="user"><br>
+  Password: <input type="password" name="pass"><br>
+  <input type="submit" value="Login">
+</form>
+<%
+if(request.getParameter("user") != null){
+    if(request.getParameter("user").equals(request.getParameter("pass")))
+        out.println("<h3>Login Successfully</h3>");
+    else
+        out.println("<h3>Login Failed</h3>");
+}
+%>
+</body></html>`}],
+    tags:["JSP","Login","Validation"]
+  },
+  q1b:{
+    q:"Write a Java program to accept the details of students and display highest percentage.",
+    files:[{lang:"java",name:"HighestPercentage.java",code:`import java.util.*;
+
+class Student {
+    String name; double per;
+    Student(String name,double per){ this.name=name; this.per=per; }
+}
+
+public class HighestPercentage {
+    public static void main(String[] args) {
+        ArrayList<Student> list = new ArrayList<>();
+        list.add(new Student("Amit",75));
+        list.add(new Student("Rahul",88));
+        list.add(new Student("Neha",92));
+        Student max = list.get(0);
+        for(Student s : list) if(s.per > max.per) max = s;
+        System.out.println("Topper: " + max.name + " " + max.per);
+    }
+}`}],
+    tags:["Collections","ArrayList","Max"]
+  },
+  q2a:{
+    q:"Create Vertical Scroll View in Android.",
+    files:[{lang:"xml",name:"activity_main.xml",code:`<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView android:text="Item 1" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <TextView android:text="Item 2" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <TextView android:text="Item 3" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <TextView android:text="Item 4" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <TextView android:text="Item 5" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    </LinearLayout>
+</ScrollView>`}],
+    tags:["ScrollView","XML Layout"]
+  },
+  q2b:{
+    q:"Create an Android Application that Demonstrate TimePicker and display selected time.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.timepicker;
+import android.app.TimePickerDialog;
+import android.os.Bundle;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.Calendar;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Button btn = new Button(this); btn.setText("Select Time");
+        setContentView(btn);
+        btn.setOnClickListener(v -> {
+            Calendar c = Calendar.getInstance();
+            new TimePickerDialog(this,
+                (view,h,m) -> btn.setText(h+":"+m),
+                c.get(Calendar.HOUR_OF_DAY),
+                c.get(Calendar.MINUTE), true).show();
+        });
+    }
+}`}],
+    tags:["TimePicker","Dialog"]
+  }
+},
+
+// ─── SLIP 17 ─────────────────────────────────────────────────────
+{
+  n:17,
+  q1a:{
+    q:"Write a java program to accept a String and display each vowel after 3 seconds.",
+    files:[{lang:"java",name:"VowelDelay.java",code:`public class VowelDelay {
+    public static void main(String[] args) {
+        String str = "Hello World";
+        try {
+            for(char c : str.toCharArray()){
+                if("aeiouAEIOU".indexOf(c) != -1){
+                    System.out.println(c);
+                    Thread.sleep(3000);
+                }
+            }
+        } catch(Exception e){ System.out.println(e); }
+    }
+}`}],
+    tags:["Threading","sleep","Vowels"]
+  },
+  q1b:{
+    q:"Write a Java program to check whether given file is present on server or not.",
+    files:[{lang:"java",name:"FileCheck.java",code:`import java.io.File;
+
+public class FileCheck {
+    public static void main(String[] args) {
+        File f = new File("C:\\\\test.txt");
+        if(f.exists()) System.out.println("File Exists");
+        else           System.out.println("File Not Found");
+    }
+}`}],
+    tags:["File I/O","exists"]
+  },
+  q2a:{
+    q:"Create an Android Application to construct ImageSwitcher using setFactory().",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.imageswitcher;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    int[] images = {android.R.drawable.ic_menu_camera,
+                    android.R.drawable.ic_menu_gallery};
+    int index = 0;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ImageSwitcher is = new ImageSwitcher(this);
+        Button btn = new Button(this); btn.setText("Next");
+        is.setFactory(() -> new ImageView(this));
+        LinearLayout l = new LinearLayout(this);
+        l.setOrientation(LinearLayout.VERTICAL);
+        l.addView(is); l.addView(btn);
+        setContentView(l);
+        is.setImageResource(images[index]);
+        btn.setOnClickListener(v -> {
+            index = (index+1) % images.length;
+            is.setImageResource(images[index]);
+        });
+    }
+}`}],
+    tags:["ImageSwitcher","ViewFactory"]
+  },
+  q2b:{
+    q:"Create an Android Application that Demonstrate Context Menu.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.contextmenu;
+import android.os.Bundle;
+import android.view.*;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    TextView tv;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        tv = new TextView(this); tv.setText("Long Press Me");
+        setContentView(tv);
+        registerForContextMenu(tv);
+    }
+    public void onCreateContextMenu(ContextMenu menu,View v,
+            ContextMenu.ContextMenuInfo info) {
+        menu.add("Option 1"); menu.add("Option 2");
+    }
+    public boolean onContextItemSelected(MenuItem item) {
+        Toast.makeText(this,item.getTitle(),Toast.LENGTH_SHORT).show();
+        return true;
+    }
+}`}],
+    tags:["ContextMenu","LongPress"]
+  }
+},
+
+// ─── SLIP 18 ─────────────────────────────────────────────────────
+{
+  n:18,
+  q1a:{
+    q:"Write a java program to calculate factorial of a number using sleep() method.",
+    files:[{lang:"java",name:"FactorialSleep.java",code:`public class FactorialSleep {
+    public static void main(String[] args) {
+        int n=5, fact=1;
+        try {
+            for(int i=1;i<=n;i++){
+                fact *= i;
+                System.out.println("Step "+i+" = "+fact);
+                Thread.sleep(1000);
+            }
+            System.out.println("Final Factorial = "+fact);
+        } catch(Exception e){ System.out.println(e); }
+    }
+}`}],
+    tags:["Threading","sleep","Factorial"]
+  },
+  q1b:{
+    q:"Write a java program for simple standalone chatting application.",
+    files:[{lang:"java",name:"ChatServer.java",code:`import java.net.*;
+import java.io.*;
+
+public class ChatServer {
+    public static void main(String[] args) throws Exception {
+        ServerSocket ss = new ServerSocket(1234);
+        Socket s = ss.accept();
+        DataInputStream  dis = new DataInputStream(s.getInputStream());
+        DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String msg = "";
+        while(!msg.equals("exit")){
+            msg = dis.readUTF();
+            System.out.println("Client: " + msg);
+            dos.writeUTF(br.readLine());
+        }
+        s.close(); ss.close();
+    }
+}`}],
+    tags:["Socket","Chat","Networking"]
+  },
+  q2a:{
+    q:"Write an Android application to accept two numbers and reject if both > 10.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.validationapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EditText n1 = new EditText(this);
+        EditText n2 = new EditText(this);
+        Button btn = new Button(this); btn.setText("Check");
+        setContentView(n1);
+        addContentView(n2,  new android.view.ViewGroup.LayoutParams(-2,-2));
+        addContentView(btn, new android.view.ViewGroup.LayoutParams(-2,-2));
+        btn.setOnClickListener(v -> {
+            int a = Integer.parseInt(n1.getText().toString());
+            int b = Integer.parseInt(n2.getText().toString());
+            Toast.makeText(this,
+                (a>10&&b>10) ? "Rejected" : "Accepted",
+                Toast.LENGTH_SHORT).show();
+        });
+    }
+}`}],
+    tags:["Validation","Toast"]
+  },
+  q2b:{
+    q:"Write a program to find specific location using Geocoding.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.geocodeapp;
+import android.location.Geocoder;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.*;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Button btn = new Button(this); btn.setText("Find Location");
+        setContentView(btn);
+        btn.setOnClickListener(v -> {
+            try {
+                Geocoder gc = new Geocoder(this);
+                List list = gc.getFromLocationName("Pune",1);
+                Toast.makeText(this,
+                    list.isEmpty() ? "Not Found" : "Location Found",
+                    Toast.LENGTH_SHORT).show();
+            } catch(Exception e){
+                Toast.makeText(this,"Error",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+}`}],
+    tags:["Geocoder","Location"]
+  }
+},
+
+// ─── SLIP 19 ─────────────────────────────────────────────────────
+{
+  n:19,
+  q1a:{
+    q:"Write a JSP program which accepts UserName and greets according to server time.",
+    files:[{lang:"jsp",name:"greet.jsp",code:`<%@ page import="java.util.*" %>
+<html><body>
+<form method="post">
+  Enter Name: <input type="text" name="name">
+  <input type="submit" value="Greet">
+</form>
+<%
+if(request.getParameter("name") != null){
+    String name = request.getParameter("name");
+    int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+    String greet = (hour<12) ? "Good Morning" :
+                   (hour<18) ? "Good Afternoon" : "Good Evening";
+    out.println("<h3>"+greet+" "+name+"</h3>");
+}
+%>
+</body></html>`}],
+    tags:["JSP","Time","Greeting"]
+  },
+  q1b:{
+    q:"Write a Java program to display first record from Student table onto TextFields.",
+    files:[{lang:"java",name:"FirstRecord.java",code:`import javax.swing.*;
+import java.sql.*;
+
+public class FirstRecord {
+    public static void main(String[] args) {
+        JTextField id   = new JTextField(10);
+        JTextField name = new JTextField(10);
+        JFrame f = new JFrame("Student");
+        f.setLayout(new java.awt.FlowLayout());
+        f.add(id); f.add(name);
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/test","root","");
+            ResultSet rs = con.createStatement()
+                    .executeQuery("SELECT * FROM Student");
+            if(rs.next()){
+                id.setText(String.valueOf(rs.getInt(1)));
+                name.setText(rs.getString(2));
+            }
+            con.close();
+        } catch(Exception e){ System.out.println(e); }
+        f.setSize(300,200); f.setVisible(true);
+    }
+}`}],
+    tags:["Swing","JDBC","JTextField"]
+  },
+  q2a:{
+    q:"Write an Android code to merge two Arrays/Lists.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.mergearray;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.*;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        List<Integer> l1 = Arrays.asList(1,2,3);
+        List<Integer> l2 = Arrays.asList(4,5,6);
+        List<Integer> merged = new ArrayList<>(l1);
+        merged.addAll(l2);
+        TextView tv = new TextView(this);
+        tv.setText("Merged: " + merged);
+        setContentView(tv);
+    }
+}`}],
+    tags:["ArrayList","addAll","Merge"]
+  },
+  q2b:{
+    q:"Create a Simple Calculator (Use Linear Layout).",
+    files:[
+      {lang:"xml",name:"activity_main.xml",code:`<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp">
+
+    <EditText android:id="@+id/n1" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+    <EditText android:id="@+id/n2" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+    <Button android:id="@+id/add" android:text="Add"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <TextView android:id="@+id/result"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+</LinearLayout>`},
+      {lang:"java",name:"MainActivity.java",code:`package com.example.calculator;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        EditText n1 = findViewById(R.id.n1);
+        EditText n2 = findViewById(R.id.n2);
+        Button add  = findViewById(R.id.add);
+        TextView res= findViewById(R.id.result);
+        add.setOnClickListener(v -> {
+            int a = Integer.parseInt(n1.getText().toString());
+            int b = Integer.parseInt(n2.getText().toString());
+            res.setText("Result = " + (a+b));
+        });
+    }
+}`}
+    ],
+    tags:["LinearLayout","Calculator"]
+  }
+},
+
+// ─── SLIP 20 ─────────────────────────────────────────────────────
+{
+  n:20,
+  q1a:{
+    q:"Write a JDBC program to delete the details of given employee.",
+    files:[{lang:"java",name:"DeleteEmployee.java",code:`import java.sql.*;
+
+public class DeleteEmployee {
+    public static void main(String[] args) {
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/test","root","");
+            PreparedStatement ps = con.prepareStatement(
+                "DELETE FROM Employee WHERE id = ?");
+            ps.setInt(1,1);
+            int rows = ps.executeUpdate();
+            System.out.println(rows>0 ? "Record Deleted" : "No Record Found");
+            con.close();
+        } catch(Exception e){ System.out.println(e); }
+    }
+}`}],
+    tags:["JDBC","DELETE","PreparedStatement"]
+  },
+  q1b:{
+    q:"Write a java program in multithreading using applet for drawing temple.",
+    files:[{lang:"java",name:"TempleApplet.java",code:`import java.applet.Applet;
+import java.awt.*;
+
+public class TempleApplet extends Applet implements Runnable {
+    Thread t;
+    public void init() { t = new Thread(this); t.start(); }
+    public void run() {
+        while(true){ repaint(); try{Thread.sleep(1000);}catch(Exception e){} }
+    }
+    public void paint(Graphics g) {
+        g.setColor(Color.GRAY);  g.fillRect(100,100,150,150);
+        g.setColor(Color.RED);
+        g.fillPolygon(new int[]{100,175,250}, new int[]{100,50,100}, 3);
+        g.setColor(Color.BLACK); g.drawString("Temple",150,270);
+    }
+}`}],
+    tags:["Applet","Graphics","Temple"]
+  },
+  q2a:{
+    q:"Write an Android Application to Change the Image Displayed on the Screen.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.imagechange;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    int[] images = {android.R.drawable.ic_menu_camera,
+                    android.R.drawable.ic_menu_gallery};
+    int index = 0;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ImageView iv = new ImageView(this);
+        Button btn = new Button(this); btn.setText("Change Image");
+        iv.setImageResource(images[index]);
+        LinearLayout l = new LinearLayout(this);
+        l.setOrientation(LinearLayout.VERTICAL);
+        l.addView(iv); l.addView(btn);
+        setContentView(l);
+        btn.setOnClickListener(v -> {
+            index=(index+1)%images.length;
+            iv.setImageResource(images[index]);
+        });
+    }
+}`}],
+    tags:["ImageView","Toggle","Button"]
+  },
+  q2b:{
+    q:"Create an Android Application to perform string operation using Radio Button.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.stringops;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EditText et = new EditText(this);
+        RadioButton upper = new RadioButton(this); upper.setText("Uppercase");
+        RadioButton lower = new RadioButton(this); lower.setText("Lowercase");
+        Button btn = new Button(this); btn.setText("Convert");
+        LinearLayout l = new LinearLayout(this);
+        l.setOrientation(LinearLayout.VERTICAL);
+        l.addView(et); l.addView(upper); l.addView(lower); l.addView(btn);
+        setContentView(l);
+        btn.setOnClickListener(v -> {
+            String t = et.getText().toString();
+            if(upper.isChecked()) t = t.toUpperCase();
+            else if(lower.isChecked()) t = t.toLowerCase();
+            Toast.makeText(this,t,Toast.LENGTH_SHORT).show();
+        });
+    }
+}`}],
+    tags:["RadioButton","String","toUpperCase"]
+  }
+},
+
+// ─── SLIP 21 ─────────────────────────────────────────────────────
+{
+  n:21,
+  q1a:{
+    q:"Write a java program to display name and priority of a Thread.",
+    files:[{lang:"java",name:"ThreadPriority.java",code:`public class ThreadPriority extends Thread {
+    public void run() {
+        System.out.println("Thread: "   + Thread.currentThread().getName());
+        System.out.println("Priority: " + Thread.currentThread().getPriority());
+    }
+    public static void main(String[] args) {
+        ThreadPriority t1 = new ThreadPriority();
+        ThreadPriority t2 = new ThreadPriority();
+        t1.setName("Thread-1"); t1.setPriority(Thread.MIN_PRIORITY);
+        t2.setName("Thread-2"); t2.setPriority(Thread.MAX_PRIORITY);
+        t1.start(); t2.start();
+    }
+}`}],
+    tags:["Threading","Priority","getName"]
+  },
+  q1b:{
+    q:"Write a SERVLET program to accept student details and display percentage and grade.",
+    files:[{lang:"java",name:"StudentServlet.java",code:`import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class StudentServlet extends HttpServlet {
+    public void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        res.setContentType("text/html");
+        PrintWriter out = res.getWriter();
+        int m1 = Integer.parseInt(req.getParameter("m1"));
+        int m2 = Integer.parseInt(req.getParameter("m2"));
+        int m3 = Integer.parseInt(req.getParameter("m3"));
+        double per = (m1+m2+m3)/3.0;
+        String grade = per>=75?"Distinction":per>=60?"First Class":
+                        per>=50?"Second Class":"Fail";
+        out.println("<h2>Percentage: "+per+"</h2>");
+        out.println("<h2>Grade: "+grade+"</h2>");
+    }
+}`}],
+    tags:["Servlet","Grades","Percentage"]
+  },
+  q2a:{
+    q:"Write an Android Program to Demonstrate Date Picker Dialog.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.datepicker;
+import android.app.DatePickerDialog;
+import android.os.Bundle;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.Calendar;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Button btn = new Button(this); btn.setText("Select Date");
+        setContentView(btn);
+        btn.setOnClickListener(v -> {
+            Calendar c = Calendar.getInstance();
+            new DatePickerDialog(this,
+                (view,y,m,d) -> btn.setText(d+"/"+(m+1)+"/"+y),
+                c.get(Calendar.YEAR),
+                c.get(Calendar.MONTH),
+                c.get(Calendar.DAY_OF_MONTH)).show();
+        });
+    }
+}`}],
+    tags:["DatePicker","Dialog","Calendar"]
+  },
+  q2b:{
+    q:"Create table Game and perform update & display operations.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.gamedb;
+import android.database.sqlite.*;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    SQLiteDatabase db;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        db = openOrCreateDatabase("GameDB",MODE_PRIVATE,null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS Game(gno INTEGER,gname TEXT)");
+        db.execSQL("INSERT INTO Game VALUES(1,'Cricket')");
+        db.execSQL("UPDATE Game SET gname='Football' WHERE gno=1");
+        Cursor c = db.rawQuery("SELECT * FROM Game",null);
+        while(c.moveToNext())
+            Toast.makeText(this,c.getInt(0)+" "+c.getString(1),
+                    Toast.LENGTH_SHORT).show();
+    }
+}`}],
+    tags:["SQLite","UPDATE","Display"]
+  }
+},
+
+// ─── SLIP 22 ─────────────────────────────────────────────────────
+{
+  n:22,
+  q1a:{
+    q:"Write a java program to display Date and Time of Server machine on client machine.",
+    files:[
+      {lang:"java",name:"Server.java",code:`import java.net.*;
+import java.io.*;
+import java.util.Date;
+
+public class Server {
+    public static void main(String[] args) throws Exception {
+        ServerSocket ss = new ServerSocket(1234);
+        Socket s = ss.accept();
+        DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+        dos.writeUTF(new Date().toString());
+        dos.close(); s.close(); ss.close();
+    }
+}`},
+      {lang:"java",name:"Client.java",code:`import java.net.*;
+import java.io.*;
+
+public class Client {
+    public static void main(String[] args) throws Exception {
+        Socket s = new Socket("localhost",1234);
+        DataInputStream dis = new DataInputStream(s.getInputStream());
+        System.out.println("Server Date & Time: " + dis.readUTF());
+        dis.close(); s.close();
+    }
+}`}
+    ],
+    tags:["Socket","Date","Networking"]
+  },
+  q1b:{
+    q:"Write a JSP program to accept Account details and display it.",
+    files:[{lang:"jsp",name:"account.jsp",code:`<html><body>
+<form method="post">
+  Account No: <input type="text" name="acc"><br>
+  Name:       <input type="text" name="name"><br>
+  Balance:    <input type="text" name="bal"><br>
+  <input type="submit" value="Show">
+</form>
+<%
+if(request.getParameter("acc") != null){
+%>
+<h3>Account Details</h3>
+Account No: <%= request.getParameter("acc") %><br>
+Name:       <%= request.getParameter("name") %><br>
+Balance:    <%= request.getParameter("bal") %><br>
+<% } %>
+</body></html>`}],
+    tags:["JSP","Form","Display"]
+  },
+  q2a:{
+    q:"Create a Simple Application which shows Greeting information to user.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.greetingapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EditText name = new EditText(this);
+        Button btn = new Button(this); btn.setText("Greet");
+        setContentView(name);
+        addContentView(btn, new android.view.ViewGroup.LayoutParams(-2,-2));
+        btn.setOnClickListener(v ->
+            Toast.makeText(this,"Hello "+name.getText(),Toast.LENGTH_SHORT).show());
+    }
+}`}],
+    tags:["Toast","Greeting","EditText"]
+  },
+  q2b:{
+    q:"Create an Android Application that Demonstrate GridView and OnClick display Toast.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.gridviewapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        GridView grid = new GridView(this);
+        grid.setNumColumns(2);
+        String[] items = {"A","B","C","D"};
+        grid.setAdapter(new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, items));
+        setContentView(grid);
+        grid.setOnItemClickListener((p,v,pos,id) ->
+            Toast.makeText(this,items[pos],Toast.LENGTH_SHORT).show());
+    }
+}`}],
+    tags:["GridView","ArrayAdapter","Toast"]
+  }
+},
+
+// ─── SLIP 23 ─────────────────────────────────────────────────────
+{
+  n:23,
+  q1a:{
+    q:"Write a Java Program to display the details of College on JTable.",
+    files:[{lang:"java",name:"CollegeTable.java",code:`import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.sql.*;
+
+public class CollegeTable {
+    public static void main(String[] args) {
+        JFrame f = new JFrame("College Data");
+        DefaultTableModel model = new DefaultTableModel();
+        JTable table = new JTable(model);
+        model.addColumn("ID"); model.addColumn("Name"); model.addColumn("Address");
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/test","root","");
+            ResultSet rs = con.createStatement()
+                    .executeQuery("SELECT * FROM College");
+            while(rs.next()) model.addRow(new Object[]{
+                    rs.getInt(1), rs.getString(2), rs.getString(3)});
+            con.close();
+        } catch(Exception e){ System.out.println(e); }
+        f.add(new JScrollPane(table)); f.setSize(400,300); f.setVisible(true);
+    }
+}`}],
+    tags:["Swing","JTable","JDBC"]
+  },
+  q1b:{
+    q:"Write a SERVLET application to accept username and password and validate using database.",
+    files:[{lang:"java",name:"LoginServlet.java",code:`import java.io.*;
+import java.sql.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class LoginServlet extends HttpServlet {
+    public void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        res.setContentType("text/html");
+        PrintWriter out = res.getWriter();
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/test","root","");
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT * FROM users WHERE username=? AND password=?");
+            ps.setString(1,req.getParameter("user"));
+            ps.setString(2,req.getParameter("pass"));
+            out.println(ps.executeQuery().next() ?
+                "<h2>Login Successful</h2>" : "<h2>Invalid Credentials</h2>");
+            con.close();
+        } catch(Exception e){ out.println(e); }
+    }
+}`}],
+    tags:["Servlet","Login","JDBC","Validation"]
+  },
+  q2a:{
+    q:"Write an Android Program to Demonstrate Date Picker Dialog on click of EditText.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.datepickeredit;
+import android.app.DatePickerDialog;
+import android.os.Bundle;
+import android.widget.EditText;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.Calendar;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EditText et = new EditText(this); et.setHint("Select Date");
+        setContentView(et);
+        et.setOnClickListener(v -> {
+            Calendar c = Calendar.getInstance();
+            new DatePickerDialog(this,
+                (view,y,m,d) -> et.setText(d+"/"+(m+1)+"/"+y),
+                c.get(Calendar.YEAR),
+                c.get(Calendar.MONTH),
+                c.get(Calendar.DAY_OF_MONTH)).show();
+        });
+    }
+}`}],
+    tags:["DatePicker","EditText","onClick"]
+  },
+  q2b:{
+    q:"Create an Android Application that Demonstrate Custom ListView.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.customlist;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ListView list = new ListView(this);
+        String[] items = {"Item 1","Item 2","Item 3"};
+        list.setAdapter(new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, items));
+        setContentView(list);
+    }
+}`}],
+    tags:["ListView","Custom","ArrayAdapter"]
+  }
+},
+
+// ─── SLIP 24 ─────────────────────────────────────────────────────
+{
+  n:24,
+  q1a:{
+    q:"Create a JSP page to accept a number and display it in words.",
+    files:[{lang:"jsp",name:"numberWords.jsp",code:`<html><body>
+<form method="post">
+  Enter Number: <input type="text" name="num">
+  <input type="submit" value="Convert">
+</form>
+<%
+if(request.getParameter("num") != null){
+    String[] words={"Zero","One","Two","Three","Four",
+                    "Five","Six","Seven","Eight","Nine"};
+    out.println("<h3>");
+    for(char c : request.getParameter("num").toCharArray())
+        if(Character.isDigit(c)) out.print(words[c-'0']+" ");
+    out.println("</h3>");
+}
+%>
+</body></html>`}],
+    tags:["JSP","Number to Words"]
+  },
+  q1b:{
+    q:"Write a menu driven program in Java for Emp table operations.",
+    files:[{lang:"java",name:"EmpMenu.java",code:`import java.sql.*;
+import java.util.Scanner;
+
+public class EmpMenu {
+    public static void main(String[] args) {
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/test","root","");
+            Scanner sc = new Scanner(System.in);
+            while(true){
+                System.out.println("1.Insert 2.Display 3.Exit");
+                int ch = sc.nextInt();
+                if(ch==1){
+                    PreparedStatement ps = con.prepareStatement(
+                        "INSERT INTO Emp VALUES(?,?,?)");
+                    ps.setInt(1,1); ps.setString(2,"Amit"); ps.setDouble(3,50000);
+                    ps.executeUpdate();
+                } else if(ch==2){
+                    ResultSet rs = con.createStatement()
+                            .executeQuery("SELECT * FROM Emp");
+                    while(rs.next())
+                        System.out.println(rs.getInt(1)+" "+rs.getString(2)+" "+rs.getDouble(3));
+                } else break;
+            }
+            con.close();
+        } catch(Exception e){ System.out.println(e); }
+    }
+}`}],
+    tags:["JDBC","Menu","CRUD"]
+  },
+  q2a:{
+    q:"Create an Android Application that Demonstrate Switch and Toggle Button.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.switchtoggle;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Switch sw = new Switch(this);
+        ToggleButton tb = new ToggleButton(this);
+        LinearLayout l = new LinearLayout(this);
+        l.setOrientation(LinearLayout.VERTICAL);
+        l.addView(sw); l.addView(tb);
+        setContentView(l);
+        sw.setOnCheckedChangeListener((b,c)->
+            Toast.makeText(this,"Switch: "+c,Toast.LENGTH_SHORT).show());
+        tb.setOnCheckedChangeListener((b,c)->
+            Toast.makeText(this,"Toggle: "+c,Toast.LENGTH_SHORT).show());
+    }
+}`}],
+    tags:["Switch","ToggleButton","Toast"]
+  },
+  q2b:{
+    q:"Create table Company and perform insert and display operations.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.companydb;
+import android.database.sqlite.*;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    SQLiteDatabase db;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        db = openOrCreateDatabase("CompanyDB",MODE_PRIVATE,null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS Company(cid INTEGER,cname TEXT)");
+        db.execSQL("INSERT INTO Company VALUES(1,'ABC Ltd')");
+        Cursor c = db.rawQuery("SELECT * FROM Company",null);
+        while(c.moveToNext())
+            Toast.makeText(this,c.getInt(0)+" "+c.getString(1),
+                    Toast.LENGTH_SHORT).show();
+    }
+}`}],
+    tags:["SQLite","Company","CRUD"]
+  }
+},
+
+// ─── SLIP 25 ─────────────────────────────────────────────────────
+{
+  n:25,
+  q1a:{
+    q:"Write a Java program to accept a number through client terminal and send it to server to calculate factors.",
+    files:[
+      {lang:"java",name:"Server.java",code:`import java.net.*;
+import java.io.*;
+
+public class Server {
+    public static void main(String[] args) throws Exception {
+        ServerSocket ss = new ServerSocket(1234);
+        Socket s = ss.accept();
+        DataInputStream  dis = new DataInputStream(s.getInputStream());
+        DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+        int num = dis.readInt();
+        String factors = "";
+        for(int i=1;i<=num;i++) if(num%i==0) factors += i+" ";
+        dos.writeUTF("Factors: " + factors);
+        dis.close(); dos.close(); s.close(); ss.close();
+    }
+}`},
+      {lang:"java",name:"Client.java",code:`import java.net.*;
+import java.io.*;
+import java.util.Scanner;
+
+public class Client {
+    public static void main(String[] args) throws Exception {
+        Socket s = new Socket("localhost",1234);
+        DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+        DataInputStream  dis = new DataInputStream(s.getInputStream());
+        System.out.print("Enter Number: ");
+        dos.writeInt(new Scanner(System.in).nextInt());
+        System.out.println(dis.readUTF());
+        dos.close(); dis.close(); s.close();
+    }
+}`}
+    ],
+    tags:["Socket","Factors","Networking"]
+  },
+  q1b:{
+    q:"Write a Java Program for database operations (Insert & Display).",
+    files:[{lang:"java",name:"DBOperations.java",code:`import java.sql.*;
+
+public class DBOperations {
+    public static void main(String[] args) {
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/test","root","");
+            Statement st = con.createStatement();
+            st.executeUpdate("INSERT INTO Employee VALUES(1,'Amit',50000)");
+            ResultSet rs = st.executeQuery("SELECT * FROM Employee");
+            while(rs.next())
+                System.out.println(rs.getInt(1)+" "+rs.getString(2)+" "+rs.getDouble(3));
+            con.close();
+        } catch(Exception e){ System.out.println(e); }
+    }
+}`}],
+    tags:["JDBC","Insert","Display","SQL"]
+  },
+  q2a:{
+    q:"Create an Android Application that Demonstrate RatingBar.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.ratingapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        RatingBar rb = new RatingBar(this);
+        Button btn   = new Button(this); btn.setText("Submit");
+        LinearLayout l = new LinearLayout(this);
+        l.setOrientation(LinearLayout.VERTICAL);
+        l.addView(rb); l.addView(btn);
+        setContentView(l);
+        btn.setOnClickListener(v ->
+            Toast.makeText(this,"Rating: "+rb.getRating(),Toast.LENGTH_SHORT).show());
+    }
+}`}],
+    tags:["RatingBar","Toast"]
+  },
+  q2b:{
+    q:"Create table Employee and perform insert and display operations.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.employeedb;
+import android.database.sqlite.*;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    SQLiteDatabase db;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        db = openOrCreateDatabase("EmployeeDB",MODE_PRIVATE,null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS Employee(id INTEGER,name TEXT)");
+        db.execSQL("INSERT INTO Employee VALUES(1,'Rahul')");
+        Cursor c = db.rawQuery("SELECT * FROM Employee",null);
+        while(c.moveToNext())
+            Toast.makeText(this,c.getInt(0)+" "+c.getString(1),
+                    Toast.LENGTH_SHORT).show();
+    }
+}`}],
+    tags:["SQLite","Employee","CRUD"]
+  }
+},
+
+// ─── SLIP 26 ─────────────────────────────────────────────────────
+{
+  n:26,
+  q1a:{
+    q:"Write a java program to display list of college names from college table. (Assume College table (CID, CName, addr) is already created.)",
+    files:[{lang:"java",name:"CollegeList.java",code:`import java.sql.*;
+
+public class CollegeList {
+    public static void main(String[] args) {
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/test","root","");
+            ResultSet rs = con.createStatement()
+                    .executeQuery("SELECT CName FROM College");
+            System.out.println("College Names:");
+            while(rs.next()) System.out.println(rs.getString("CName"));
+            con.close();
+        } catch(Exception e){ System.out.println(e); }
+    }
+}`}],
+    tags:["JDBC","SELECT","College"]
+  },
+  q1b:{
+    q:"Write a SERVLET program to Design an HTML page containing 4 option buttons (Painting, Drawing, Singing, Swimming) with reset/submit. Add cookie for selected hobby (no duplicates).",
+    files:[
+      {lang:"html",name:"index.html",code:`<html><body>
+<form action="HobbyServlet" method="post">
+  <input type="checkbox" name="hobby" value="Painting"> Painting<br>
+  <input type="checkbox" name="hobby" value="Drawing"> Drawing<br>
+  <input type="checkbox" name="hobby" value="Singing"> Singing<br>
+  <input type="checkbox" name="hobby" value="Swimming"> Swimming<br>
+  <input type="submit" value="Submit">
+  <input type="reset"  value="Reset">
+</form>
+</body></html>`},
+      {lang:"java",name:"HobbyServlet.java",code:`import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class HobbyServlet extends HttpServlet {
+    public void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        res.setContentType("text/html");
+        PrintWriter out = res.getWriter();
+        String[] hobbies = req.getParameterValues("hobby");
+        Cookie[] cookies = req.getCookies();
+        for(String h : hobbies){
+            boolean exists = false;
+            if(cookies != null)
+                for(Cookie c : cookies) if(c.getName().equals(h)){ exists=true; break; }
+            if(!exists) res.addCookie(new Cookie(h,h));
+        }
+        out.println("<h3>Hobbies Stored Successfully</h3>");
+    }
+}`}
+    ],
+    tags:["Servlet","Cookie","Checkbox","No Duplicate"]
+  },
+  q2a:{
+    q:"Create an Android Application to accept a number and display the multiplication table (Use Table Layout).",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.tablelayout;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EditText et  = new EditText(this);
+        Button btn   = new Button(this); btn.setText("Show Table");
+        TableLayout table = new TableLayout(this);
+        LinearLayout l = new LinearLayout(this);
+        l.setOrientation(LinearLayout.VERTICAL);
+        l.addView(et); l.addView(btn); l.addView(table);
+        setContentView(l);
+        btn.setOnClickListener(v -> {
+            table.removeAllViews();
+            int n = Integer.parseInt(et.getText().toString());
+            for(int i=1;i<=10;i++){
+                TableRow row = new TableRow(this);
+                TextView tv  = new TextView(this);
+                tv.setText(n+" x "+i+" = "+(n*i));
+                row.addView(tv); table.addView(row);
+            }
+        });
+    }
+}`}],
+    tags:["TableLayout","Multiplication Table"]
+  },
+  q2b:{
+    q:"Create the following layout using Spinner.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.spinner;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Spinner spinner = new Spinner(this);
+        String[] items = {"Painting","Drawing","Singing","Swimming"};
+        spinner.setAdapter(new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_dropdown_item, items));
+        setContentView(spinner);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            public void onItemSelected(AdapterView<?> p,android.view.View v,int pos,long id){
+                Toast.makeText(MainActivity.this,items[pos],Toast.LENGTH_SHORT).show();
+            }
+            public void onNothingSelected(AdapterView<?> p){}
+        });
+    }
+}`}],
+    tags:["Spinner","ArrayAdapter","Dropdown"]
+  }
+},
+
+// ─── SLIP 27 ─────────────────────────────────────────────────────
+{
+  n:27,
+  q1a:{
+    q:"Write a JSP script to accept teacher details and display.",
+    files:[{lang:"jsp",name:"teacher.jsp",code:`<html><body>
+<form method="post">
+  Teacher ID: <input type="text" name="tid"><br>
+  Name:        <input type="text" name="name"><br>
+  Subject:     <input type="text" name="sub"><br>
+  <input type="submit" value="Submit">
+</form>
+<%
+if(request.getParameter("tid") != null){
+%>
+<h3>Teacher Details</h3>
+ID:      <%= request.getParameter("tid")  %><br>
+Name:    <%= request.getParameter("name") %><br>
+Subject: <%= request.getParameter("sub")  %><br>
+<% } %>
+</body></html>`}],
+    tags:["JSP","Form","Teacher"]
+  },
+  q1b:{
+    q:"Write a Java Program for scrollable ResultSet.",
+    files:[{lang:"java",name:"ScrollableRS.java",code:`import java.sql.*;
+
+public class ScrollableRS {
+    public static void main(String[] args) {
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/test","root","");
+            Statement st = con.createStatement(
+                ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = st.executeQuery("SELECT * FROM Student");
+            rs.last();  System.out.println("Last:  " + rs.getString(2));
+            rs.first(); System.out.println("First: " + rs.getString(2));
+            rs.next();  System.out.println("Next:  " + rs.getString(2));
+            con.close();
+        } catch(Exception e){ System.out.println(e); }
+    }
+}`}],
+    tags:["JDBC","Scrollable","ResultSet"]
+  },
+  q2a:{
+    q:"Write an Android program to perform Zoom In, Zoom Out operation and display Hybrid view.",
+    files:[{lang:"java",name:"MapsActivity.java",code:`package com.example.mapzoom;
+import android.os.Bundle;
+import androidx.fragment.app.FragmentActivity;
+import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.model.*;
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+    GoogleMap map;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        SupportMapFragment mf = new SupportMapFragment();
+        getSupportFragmentManager().beginTransaction()
+                .add(android.R.id.content,mf).commit();
+        mf.getMapAsync(this);
+    }
+    public void onMapReady(GoogleMap gm) {
+        map = gm;
+        LatLng loc = new LatLng(18.5204,73.8567);
+        map.addMarker(new MarkerOptions().position(loc).title("Location"));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc,10));
+        map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        map.getUiSettings().setZoomControlsEnabled(true);
+    }
+}`}],
+    tags:["Google Maps","Hybrid","Zoom"]
+  },
+  q2b:{
+    q:"Construct an Android Application to calculate Factorial and Sum of Digits.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.calcapp;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EditText et = new EditText(this);
+        Button btn  = new Button(this); btn.setText("Calculate");
+        TextView tv = new TextView(this);
+        LinearLayout l = new LinearLayout(this);
+        l.setOrientation(LinearLayout.VERTICAL);
+        l.addView(et); l.addView(btn); l.addView(tv);
+        setContentView(l);
+        btn.setOnClickListener(v -> {
+            int n=Integer.parseInt(et.getText().toString()),fact=1,sum=0,temp=n;
+            for(int i=1;i<=n;i++) fact*=i;
+            while(temp>0){ sum+=temp%10; temp/=10; }
+            tv.setText("Factorial: "+fact+"\\nSum of Digits: "+sum);
+        });
+    }
+}`}],
+    tags:["Factorial","Sum of Digits","Arithmetic"]
+  }
+},
+
+// ─── SLIP 28 ─────────────────────────────────────────────────────
+{
+  n:28,
+  q1a:{
+    q:"Write a java program for the implementation of synchronization.",
+    files:[{lang:"java",name:"SyncDemo.java",code:`class Table {
+    synchronized void printTable(int n){
+        for(int i=1;i<=5;i++){
+            System.out.println(n*i);
+            try{Thread.sleep(500);}catch(Exception e){}
+        }
+    }
+}
+class Thread1 extends Thread {
+    Table t; Thread1(Table t){this.t=t;}
+    public void run(){ t.printTable(2); }
+}
+class Thread2 extends Thread {
+    Table t; Thread2(Table t){this.t=t;}
+    public void run(){ t.printTable(5); }
+}
+public class SyncDemo {
+    public static void main(String[] args) {
+        Table obj = new Table();
+        new Thread1(obj).start();
+        new Thread2(obj).start();
+    }
+}`}],
+    tags:["Synchronization","Threading","synchronized"]
+  },
+  q1b:{
+    q:"Write a Java program to display employee details in JTable.",
+    files:[{lang:"java",name:"EmpTable.java",code:`import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.sql.*;
+
+public class EmpTable {
+    public static void main(String[] args) {
+        JFrame f = new JFrame("Employee Data");
+        DefaultTableModel model = new DefaultTableModel();
+        JTable table = new JTable(model);
+        model.addColumn("ID"); model.addColumn("Name"); model.addColumn("Salary");
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/test","root","");
+            ResultSet rs = con.createStatement()
+                    .executeQuery("SELECT * FROM Employee");
+            while(rs.next()) model.addRow(new Object[]{
+                    rs.getInt(1), rs.getString(2), rs.getDouble(3)});
+            con.close();
+        } catch(Exception e){ System.out.println(e); }
+        f.add(new JScrollPane(table)); f.setSize(400,300); f.setVisible(true);
+    }
+}`}],
+    tags:["Swing","JTable","JDBC","Employee"]
+  },
+  q2a:{
+    q:"Create Android Application to send greet message using Intent.",
+    files:[
+      {lang:"java",name:"MainActivity.java",code:`package com.example.greetapp;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EditText et = new EditText(this);
+        Button btn  = new Button(this); btn.setText("Send");
+        setContentView(et);
+        addContentView(btn, new android.view.ViewGroup.LayoutParams(-2,-2));
+        btn.setOnClickListener(v -> {
+            Intent i = new Intent(this,SecondActivity.class);
+            i.putExtra("msg",et.getText().toString());
+            startActivity(i);
+        });
+    }
+}`},
+      {lang:"java",name:"SecondActivity.java",code:`package com.example.greetapp;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class SecondActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        TextView tv = new TextView(this);
+        tv.setText("Hello " + getIntent().getStringExtra("msg"));
+        setContentView(tv);
+    }
+}`}
+    ],
+    tags:["Intent","Greeting","Activity"]
+  },
+  q2b:{
+    q:"Create a Custom ListView.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.customlist;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ListView lv = new ListView(this);
+        String[] items = {"Item 1","Item 2","Item 3"};
+        lv.setAdapter(new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1,items));
+        setContentView(lv);
+    }
+}`}],
+    tags:["ListView","Custom","ArrayAdapter"]
+  }
+},
+
+// ─── SLIP 29 ─────────────────────────────────────────────────────
+{
+  n:29,
+  q1a:{
+    q:"Write a java program using multithreading to display odd and prime numbers.",
+    files:[{lang:"java",name:"MultiDemo.java",code:`class OddThread extends Thread {
+    public void run(){
+        for(int i=1;i<=50;i++) if(i%2!=0) System.out.println("Odd: "+i);
+    }
+}
+class PrimeThread extends Thread {
+    public void run(){
+        for(int i=2;i<=50;i++){
+            boolean p=true;
+            for(int j=2;j<=(int)Math.sqrt(i);j++) if(i%j==0){p=false;break;}
+            if(p) System.out.println("Prime: "+i);
+        }
+    }
+}
+public class MultiDemo {
+    public static void main(String[] args) {
+        new OddThread().start();
+        new PrimeThread().start();
+    }
+}`}],
+    tags:["Threading","Odd","Prime","Multithreading"]
+  },
+  q1b:{
+    q:"Write a SERVLET program to change inactive time interval of session.",
+    files:[{lang:"java",name:"SessionServlet.java",code:`import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class SessionServlet extends HttpServlet {
+    public void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        res.setContentType("text/html");
+        PrintWriter out = res.getWriter();
+        HttpSession session = req.getSession();
+        session.setMaxInactiveInterval(60);
+        out.println("<h3>Session timeout set to 60 seconds</h3>");
+    }
+}`}],
+    tags:["Servlet","Session","Timeout"]
+  },
+  q2a:{
+    q:"Create an application to accept Movie details and display on next activity.",
+    files:[
+      {lang:"java",name:"MainActivity.java",code:`package com.example.movieapp;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EditText name = new EditText(this);
+        EditText type = new EditText(this);
+        Button btn = new Button(this); btn.setText("Submit");
+        setContentView(name);
+        addContentView(type, new android.view.ViewGroup.LayoutParams(-2,-2));
+        addContentView(btn,  new android.view.ViewGroup.LayoutParams(-2,-2));
+        btn.setOnClickListener(v -> {
+            Intent i = new Intent(this,SecondActivity.class);
+            i.putExtra("name",name.getText().toString());
+            i.putExtra("type",type.getText().toString());
+            startActivity(i);
+        });
+    }
+}`},
+      {lang:"java",name:"SecondActivity.java",code:`package com.example.movieapp;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class SecondActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        TextView tv = new TextView(this);
+        tv.setText("Movie: "+getIntent().getStringExtra("name")+
+                   "\\nType: " +getIntent().getStringExtra("type"));
+        setContentView(tv);
+    }
+}`}
+    ],
+    tags:["Intent","Movie","Activity"]
+  },
+  q2b:{
+    q:"Construct an application to calculate Palindrome and Reverse using Menu.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.menuapp;
+import android.os.Bundle;
+import android.view.*;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    EditText et;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        et = new EditText(this);
+        setContentView(et);
+    }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add("Reverse"); menu.add("Palindrome"); return true;
+    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        String t = et.getText().toString();
+        String r = new StringBuilder(t).reverse().toString();
+        if(item.getTitle().equals("Reverse"))
+            Toast.makeText(this,"Reverse: "+r,Toast.LENGTH_SHORT).show();
+        if(item.getTitle().equals("Palindrome"))
+            Toast.makeText(this,t.equals(r)?"Palindrome":"Not Palindrome",
+                    Toast.LENGTH_SHORT).show();
+        return true;
+    }
+}`}],
+    tags:["Menu","Palindrome","Reverse","OptionsMenu"]
+  }
+},
+
+// ─── SLIP 30 ─────────────────────────────────────────────────────
+{
+  n:30,
+  q1a:{
+    q:"Write a JSP script to accept a String from a user and display it in reverse order.",
+    files:[{lang:"jsp",name:"reverse.jsp",code:`<html><body>
+<form method="post">
+  Enter String: <input type="text" name="str">
+  <input type="submit" value="Reverse">
+</form>
+<%
+if(request.getParameter("str") != null){
+    String rev = new StringBuilder(request.getParameter("str")).reverse().toString();
+%>
+<h3>Reversed String: <%= rev %></h3>
+<% } %>
+</body></html>`}],
+    tags:["JSP","Reverse","String"]
+  },
+  q1b:{
+    q:"Write a java program in multithreading using applet for moving car.",
+    files:[{lang:"java",name:"MovingCar.java",code:`import java.applet.Applet;
+import java.awt.*;
+
+public class MovingCar extends Applet implements Runnable {
+    int x = 0;
+    Thread t;
+    public void init() { t = new Thread(this); t.start(); }
+    public void run() {
+        while(true){
+            x += 5;
+            if(x > getWidth()) x = 0;
+            repaint();
+            try{Thread.sleep(100);}catch(Exception e){}
+        }
+    }
+    public void paint(Graphics g) {
+        g.setColor(Color.BLUE); g.fillRect(x,100,100,30);
+        g.setColor(Color.BLACK);
+        g.fillOval(x+10,130,20,20);
+        g.fillOval(x+60,130,20,20);
+    }
+}`}],
+    tags:["Applet","Animation","Moving Car","Threading"]
+  },
+  q2a:{
+    q:"Create First Activity to accept Student details and display on Second Activity.",
+    files:[
+      {lang:"java",name:"MainActivity.java",code:`package com.example.studentapp;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EditText name  = new EditText(this);
+        EditText marks = new EditText(this);
+        Button btn = new Button(this); btn.setText("Submit");
+        setContentView(name);
+        addContentView(marks, new android.view.ViewGroup.LayoutParams(-2,-2));
+        addContentView(btn,   new android.view.ViewGroup.LayoutParams(-2,-2));
+        btn.setOnClickListener(v -> {
+            Intent i = new Intent(this,SecondActivity.class);
+            i.putExtra("name", name.getText().toString());
+            i.putExtra("marks",marks.getText().toString());
+            startActivity(i);
+        });
+    }
+}`},
+      {lang:"java",name:"SecondActivity.java",code:`package com.example.studentapp;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class SecondActivity extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        TextView tv = new TextView(this);
+        tv.setText("Name: " +getIntent().getStringExtra("name")+
+                   "\\nMarks: "+getIntent().getStringExtra("marks"));
+        setContentView(tv);
+    }
+}`}
+    ],
+    tags:["Intent","Student","Activity"]
+  },
+  q2b:{
+    q:"Create Table Employee and perform insert and display operations.",
+    files:[{lang:"java",name:"MainActivity.java",code:`package com.example.employeedb;
+import android.database.sqlite.*;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    SQLiteDatabase db;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        db = openOrCreateDatabase("EmployeeDB",MODE_PRIVATE,null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS Employee(id INTEGER,name TEXT)");
+        db.execSQL("INSERT INTO Employee VALUES(1,'Amit')");
+        Cursor c = db.rawQuery("SELECT * FROM Employee",null);
+        while(c.moveToNext())
+            Toast.makeText(this,c.getInt(0)+" "+c.getString(1),
+                    Toast.LENGTH_SHORT).show();
+    }
+}`}],
+    tags:["SQLite","Employee","Insert","Display"]
+  }
+}
+
+]; // end SLIPS
+
+// ═══════════════════════════════════════════════════════════════
+//  RENDERER
+// ═══════════════════════════════════════════════════════════════
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderCode(code, lang){
+  // minimal keyword highlight
+  let c = escapeHtml(code);
+  // strings
+  c = c.replace(/"([^"\\]|\\.)*"/g, m => `<span class="st">${m}</span>`);
+  c = c.replace(/'([^'\\]|\\.)*'/g, m => `<span class="st">${m}</span>`);
+  // comments
+  c = c.replace(/(\/\/[^\n]*)/g, m => `<span class="cm">${m}</span>`);
+  c = c.replace(/(\/\*[\s\S]*?\*\/)/g, m => `<span class="cm">${m}</span>`);
+  // keywords
+  const kws = ['public','private','protected','class','interface','extends',
+    'implements','import','package','static','void','int','double','float',
+    'boolean','char','String','long','short','byte','new','return','if','else',
+    'while','for','try','catch','throw','throws','finally','super','this',
+    'null','true','false','break','continue','synchronized','volatile',
+    'abstract','final','native','transient','enum','instanceof',
+    'switch','case','default','do'];
+  kws.forEach(k => {
+    c = c.replace(new RegExp(`\\b(${k})\\b`,'g'),
+      `<span class="kw">$1</span>`);
+  });
+  return c;
+}
+
+function copyCode(btn){
+  const pre = btn.closest('.code-wrap').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText || pre.textContent).then(()=>{
+    btn.textContent='✓ Copied!'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('copied'); },2000);
+  });
+}
+
+function buildQ(key, slip){
+  const qd = slip[key];
+  if(!qd) return '';
+  const label = key === 'q1a' ? 'A)' : key === 'q1b' ? 'B)' : key === 'q2a' ? 'A)' : 'B)';
+  let html = `<div class="q-block">
+    <span class="q-label">${label}</span>
+    <p class="q-text">${escapeHtml(qd.q)}</p>`;
+  qd.files.forEach(f => {
+    html += `<div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">${f.lang}</span>
+        <span class="code-filename">${escapeHtml(f.name)}</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre>${renderCode(f.code, f.lang)}</pre>
+    </div>`;
+  });
+  if(qd.tags && qd.tags.length){
+    html += `<div class="tag-row">${qd.tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function buildSlip(slip){
+  const id = `slip${slip.n}`;
+  let html = `<div class="slip" id="${id}">
+    <div class="slip-header" onclick="toggleSlip(this)">
+      <span class="slip-badge">SLIP ${slip.n}</span>
+      <span class="slip-title">Advanced Java &amp; Android – Slip ${slip.n}</span>
+      <span class="slip-toggle">▾</span>
+    </div>
+    <div class="slip-body">`;
+
+  // Q1
+  if(slip.q1a || slip.q1b){
+    html += `<div class="q-section"><div class="q-title">Q.1 — Advanced Java</div>`;
+    html += buildQ('q1a', slip);
+    html += buildQ('q1b', slip);
+    html += `</div>`;
+  }
+  // Q2
+  if(slip.q2a || slip.q2b){
+    html += `<div class="q-section"><div class="q-title">Q.2 — Android</div>`;
+    html += buildQ('q2a', slip);
+    html += buildQ('q2b', slip);
+    html += `</div>`;
+  }
+
+  html += `</div></div>`;
+  return html;
+}
+
+function toggleSlip(header){
+  const slip = header.closest('.slip');
+  slip.classList.toggle('collapsed');
+}
+
+// Build main content
+const main = document.getElementById('main');
+SLIPS.forEach(slip => {
+  main.insertAdjacentHTML('beforeend', buildSlip(slip));
+});
+
+// Build sidebar
+const sidebar = document.getElementById('sidebar');
+SLIPS.forEach(slip => {
+  const a = document.createElement('a');
+  a.className = 'sb-link';
+  a.href = `#slip${slip.n}`;
+  a.textContent = `Slip ${slip.n}`;
+  a.onclick = function(e){
+    document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
+    this.classList.add('active');
+  };
+  sidebar.appendChild(a);
+});
+
+// ── SEARCH ──────────────────────────────────────────────────────
+const searchEl = document.getElementById('search');
+searchEl.addEventListener('input', function(){
+  const q = this.value.trim().toLowerCase();
+  SLIPS.forEach(slip => {
+    const el = document.getElementById(`slip${slip.n}`);
+    if(!q){ el.style.display=''; return; }
+    const text = el.textContent.toLowerCase();
+    el.style.display = text.includes(q) ? '' : 'none';
+  });
+});
+
+// ── BACK TO TOP ─────────────────────────────────────────────────
+const btt = document.getElementById('btt');
+window.addEventListener('scroll', ()=>{
+  btt.classList.toggle('show', window.scrollY > 400);
+
+  // progress bar
+  const h = document.documentElement;
+  const pct = (window.scrollY / (h.scrollHeight - h.clientHeight)) * 100;
+  document.getElementById('progress').style.width = pct + '%';
+
+  // active sidebar
+  let active = null;
+  SLIPS.forEach(slip => {
+    const el = document.getElementById(`slip${slip.n}`);
+    if(el && el.getBoundingClientRect().top < 120) active = `slip${slip.n}`;
+  });
+  if(active){
+    document.querySelectorAll('.sb-link').forEach(l=>{
+      l.classList.toggle('active', l.getAttribute('href') === '#'+active);
+    });
+  }
+});
+btt.onclick = () => window.scrollTo({top:0,behavior:'smooth'});
+
+</script>
+</body>
+</html>
